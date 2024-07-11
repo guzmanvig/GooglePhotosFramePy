@@ -8,7 +8,7 @@ delay = 10000  # Delay duration in milliseconds
 transition_duration = 1000  # Transition duration in milliseconds
 
 
-def get_fullscreen_image(image_path):
+def get_fullscreen_image(image_path, window_name):
     img = cv2.imread(image_path)
 
     # Get the dimensions of the image and the screen
@@ -72,8 +72,8 @@ if __name__ == '__main__':
         current_img_path = image_folder + images[current_img_index]
         next_img_path = image_folder + images[next_img_index]
 
-        fullscreen_current_img = get_fullscreen_image(current_img_path)
-        fullscreen_next_img = get_fullscreen_image(next_img_path)
+        fullscreen_current_img = get_fullscreen_image(current_img_path, window_name)
+        fullscreen_next_img = get_fullscreen_image(next_img_path, window_name)
 
         # Display the image
         cv2.imshow(window_name, fullscreen_current_img)
