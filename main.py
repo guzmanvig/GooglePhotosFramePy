@@ -1,11 +1,13 @@
+import asyncio
 import datetime
 import os
 
 import cv2
 import numpy as np
+from google_api import download_random_photos
 
 delay = 10000  # Delay duration in milliseconds
-transition_duration = 1000  # Transition duration in milliseconds
+transition_duration = 500  # Transition duration in milliseconds
 
 
 def get_fullscreen_image(image_path, window_name):
@@ -48,10 +50,31 @@ def crossfade_images(img1, img2, alpha):
     img2 = cv2.resize(img2, (img1.shape[1], img1.shape[0]))
     return cv2.addWeighted(img1, alpha, img2, 1 - alpha, 0)
 
-if __name__ == '__main__':
+
+def next_index(index, length):
+    next_idx = index + 1
+    if next_idx >= length:
+        return 0
+    return next_idx
+
+
+async def async_download_photo(index):
+    asyncio.create_task(
+        download_random_photos(
+            number_of_photos=1,
+            photo_names=[str(index)]
+        )
+    )
+
+
+def main_loop():
+    # Wait for the initial download to finish
+    await download_random_photos(number_of_photos=5, photo_names=["0", "1", "2", "3", "4"])
 
     image_folder = "photos/"  # Images destination
     images = os.listdir(image_folder)
+    images.sort()
+    number_of_images = len(images)
 
     window_name = "image"
 
@@ -60,14 +83,12 @@ if __name__ == '__main__':
 
     current_img_index = 0
     while True:
-        current_img_index += 1
+        next_img_index = next_index(current_img_index, number_of_images)
+        print("Next index: ", next_img_index)
 
-        if current_img_index >= len(images):
-            current_img_index = 0
-
-        next_img_index = current_img_index + 1
-        if next_img_index >= len(images):
-            next_img_index = 0
+        # Download image of the following iteration async so it's ready
+        next_iteration_current_index = next_index(next_img_index, number_of_images)
+        asyncio.run(async_download_photo(next_iteration_current_index))
 
         current_img_path = image_folder + images[current_img_index]
         next_img_path = image_folder + images[next_img_index]
@@ -75,10 +96,11 @@ if __name__ == '__main__':
         fullscreen_current_img = get_fullscreen_image(current_img_path, window_name)
         fullscreen_next_img = get_fullscreen_image(next_img_path, window_name)
 
-        # Display the image
+        # Display the current image
         cv2.imshow(window_name, fullscreen_current_img)
         key = cv2.waitKey(delay)
 
+        # Crossfade to the next image
         for alpha in np.linspace(0, 1, transition_duration // 10):
             blended_img = crossfade_images(fullscreen_next_img, fullscreen_current_img, alpha)
             cv2.imshow(window_name, blended_img)
@@ -88,3 +110,9 @@ if __name__ == '__main__':
 
         if key == ord('q'):
             break
+
+        current_img_index = next_index(current_img_index, number_of_images)
+
+
+if __name__ == '__main__':
+    main_loop()

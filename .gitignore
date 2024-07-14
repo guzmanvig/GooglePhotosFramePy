@@ -1,7 +1,10 @@
 # Byte-compiled / optimized / DLL files
 /photos/*
+client_secret.json
+token.json
 
 .idea/
+.DS_Store
 
 __pycache__/
 *.py[cod]
