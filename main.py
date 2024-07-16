@@ -69,7 +69,7 @@ async def async_download_photo(index):
 
 def main_loop():
     # Wait for the initial download to finish
-    await download_random_photos(number_of_photos=5, photo_names=["0", "1", "2", "3", "4"])
+    asyncio.run(download_random_photos(number_of_photos=5, photo_names=["0", "1", "2", "3", "4"]))
 
     image_folder = "photos/"  # Images destination
     images = os.listdir(image_folder)
@@ -84,7 +84,6 @@ def main_loop():
     current_img_index = 0
     while True:
         next_img_index = next_index(current_img_index, number_of_images)
-        print("Next index: ", next_img_index)
 
         # Download image of the following iteration async so it's ready
         next_iteration_current_index = next_index(next_img_index, number_of_images)
