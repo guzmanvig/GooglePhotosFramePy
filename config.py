@@ -17,8 +17,8 @@ config = {
     'time_text': {
         'show': True,
         'relative_position': 'BOTTOM_CENTER',  # Or TOP_CENTER
-        'margin_top': 20,
-        'margin_bottom': 20,
+        'margin_top': 20,  # Only relevant if TOP_CENTER
+        'margin_bottom': 20,  # Only relevant if BOTTOM_CENTER
         'start_position_X': 20,  # If these 2 are set, the previous ones are ignored
         'start_position_Y': 100,
         'format': '%H:%M',
