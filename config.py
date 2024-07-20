@@ -17,14 +17,14 @@ config = {
         'start_position_X': 20,
         'start_position_Y': 100,
         'format': '%H:%M',
-        'font_scale': 5,
-        'font_thickness': 5,
+        'font_scale': 3,
+        'font_thickness': 4,
         'font_color': (255, 255, 255)
     },
     'date_text': {
         'show': True,
         'position': 'CENTER_BELOW_TIME',  # Only one available at the moment
-        'margin_top_from_time': 10,
+        'margin_top_from_time': 15,
         'format': '%d de %B',
         'font_scale': 1,
         'font_thickness': 1,
