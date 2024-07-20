@@ -10,7 +10,6 @@ config = {
     'slideshow': {
         'delay_between_photos': 10000,  # In milliseconds
         'transition_animation_duration': 500,  # In milliseconds
-        'rotate_photos': True  # Useful for when the photos are in portrait mode
     },
     'general': {
         'locale': 'es_ES.UTF-8'

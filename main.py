@@ -13,9 +13,6 @@ locale.setlocale(locale.LC_TIME, config['general']['locale'])
 def get_fullscreen_image(image_path, window_name):
     img = cv2.imread(image_path)
 
-    if config['slideshow']['rotate_photos']:
-        img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
-
     # Get the dimensions of the image and the screen
     img_height, img_width = img.shape[:2]
     screen_width, screen_height = cv2.getWindowImageRect(window_name)[2:4]
