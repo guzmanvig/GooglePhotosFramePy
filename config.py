@@ -1,8 +1,10 @@
 config = {
     'photo_selection': {
         'ranges': [
-            {'startDate': {'year': 2024, 'month': 3, 'day': 28}},
-            {'endDate': {'year': 2024, 'month': 6, 'day': 21}}
+            {
+                'startDate': {'year': 2024, 'month': 3, 'day': 28},
+                'endDate': {'year': 2024, 'month': 6, 'day': 21}
+            },
         ]
     },
     'slideshow': {
