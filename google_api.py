@@ -1,15 +1,17 @@
 import asyncio
-import datetime
 import os.path
-
 import numpy as np
-import pandas as pd
 import requests
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 
 SCOPES = ['https://www.googleapis.com/auth/photoslibrary.readonly']
+
+START_DATE = {"year": 2024, "month": 3, "day": 28}
+END_DATE = {"year": 2024, "month": 6, "day": 21}
+
+all_photo_urls = []
 
 
 def get_token():
@@ -35,22 +37,14 @@ def get_token():
     return creds.token
 
 
-async def download_random_photos(number_of_photos, photo_names):
-    # Create 50 random dates between 2018-01-01 and today
-    dates = pd.date_range(start='2018-01-01', end=datetime.datetime.now().strftime("%Y-%m-%d"), periods=50)
-    # Create 4 random indices between 0 and the length of the dates - 1
-    random_start_dates_indices = np.random.randint(0, len(dates) - 1, 4)
+def google_api_search(page_token):
+    date_ranges = [
+        {
+            "startDate": START_DATE,
+            "endDate": END_DATE
+        }
+    ]
 
-    date_ranges = []
-    for i in random_start_dates_indices:
-        start_date = dates[i]
-        end_date = dates[i + 1]
-        date_ranges.append({
-            "startDate": {"year": start_date.year, "month": start_date.month, "day": start_date.day},
-            "endDate": {"year": end_date.year, "month": end_date.month, "day": end_date.day}
-        })
-
-    # Get photos based on the random range of dates
     response = requests.post(
         "https://photoslibrary.googleapis.com/v1/mediaItems:search",
         headers={
@@ -64,19 +58,46 @@ async def download_random_photos(number_of_photos, photo_names):
                 "mediaTypeFilter": {
                     "mediaTypes": ["PHOTO"]
                 }
-            }
+            },
+            "pageSize": 100,
+            "pageToken": page_token
         }
     )
 
     response_json = response.json()
     media_items = response_json["mediaItems"]
+    next_page_token = response_json.get("nextPageToken")
 
-    # Select 4 random photos
-    random_photos = np.random.choice(media_items, number_of_photos)
+    photo_urls = [photo["baseUrl"] for photo in media_items]
+    return photo_urls, next_page_token
+
+
+def get_all_media_items():
+    photo_urls, next_page_token = google_api_search("")
+    all_photo_urls.extend(photo_urls)
+    while next_page_token:
+        photo_urls, next_page_token = google_api_search(next_page_token)
+        all_photo_urls.extend(photo_urls)
+
+
+async def download_random_photos(number_of_photos, photo_names):
+    if len(photo_names) != number_of_photos:
+        raise ValueError("The number of photo names should be equal to the number of photos")
+
+    if len(all_photo_urls) < number_of_photos:
+        all_photo_urls.clear()
+        get_all_media_items()
+
+    # Select random photos links
+    random_photos_urls = np.random.choice(all_photo_urls, number_of_photos, replace=False)
+
+    # Remove them from the list
+    for photo_url in random_photos_urls:
+        all_photo_urls.remove(photo_url)
 
     # Download the photos
-    for i, photo in enumerate(random_photos):
-        response = requests.get(f"{photo['baseUrl']}=d")
+    for i, photo_url in enumerate(random_photos_urls):
+        response = requests.get(f"{photo_url}=d")
         with open(f"photos/{photo_names[i]}.jpg", "wb") as f:
             f.write(response.content)
 

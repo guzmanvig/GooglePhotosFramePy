@@ -1,13 +1,15 @@
 import asyncio
 import datetime
 import os
-
+import locale
 import cv2
 import numpy as np
 from google_api import download_random_photos
 
-delay = 10000  # Delay duration in milliseconds
-transition_duration = 500  # Transition duration in milliseconds
+locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
+
+DELAY = 10000  # Delay duration in milliseconds
+TRANSITION_DURATION = 500  # Transition duration in milliseconds
 
 
 def get_fullscreen_image(image_path, window_name):
@@ -38,9 +40,32 @@ def get_fullscreen_image(image_path, window_name):
         result_img = cv2.copyMakeBorder(scaled_img, padding, padding, 0, 0, cv2.BORDER_CONSTANT, value=(0, 0, 0))
         screen_height = new_height
 
-    # Add time and date to image
+    time_x_position = 20
+    time_y_position = screen_height - 100
+
+    # Add time to the image
     current_time = datetime.datetime.now().strftime("%H:%M")
-    cv2.putText(result_img, current_time, (20, screen_height - 100), cv2.FONT_HERSHEY_DUPLEX, 5, (255, 255, 255), 5)
+    time_font_scale = 5
+    time_thickness = 5
+
+    # Display time
+    cv2.putText(result_img, current_time, (time_x_position, time_y_position), cv2.FONT_HERSHEY_DUPLEX, time_font_scale, (255, 255, 255), time_thickness)
+
+    # Get length of the time text
+    time_width = cv2.getTextSize(current_time, cv2.FONT_HERSHEY_DUPLEX, time_font_scale, time_thickness)[0][0]
+
+    # Add date to the image
+    current_date = datetime.datetime.now().strftime('%d de %B')
+
+    date_font_scale = 3
+    date_thickness = 3
+    date_width = cv2.getTextSize(current_date, cv2.FONT_HERSHEY_DUPLEX, date_font_scale, date_thickness)[0][0]
+
+    # Calculate where to start the date text
+    date_start_point_offset_from_time = time_width / 2 - date_width / 2
+
+    # Display date
+    cv2.putText(result_img, current_time, (time_x_position + date_start_point_offset_from_time, time_y_position), cv2.FONT_HERSHEY_DUPLEX, time_font_scale, (255, 255, 255), time_thickness)
 
     return result_img
 
@@ -69,7 +94,7 @@ async def async_download_photo(index):
 
 def main_loop():
     # Wait for the initial download to finish
-    asyncio.run(download_random_photos(number_of_photos=5, photo_names=["0", "1", "2", "3", "4"]))
+    asyncio.run(download_random_photos(number_of_photos=2, photo_names=["0", "1"]))
 
     image_folder = "photos/"  # Images destination
     images = os.listdir(image_folder)
@@ -97,10 +122,10 @@ def main_loop():
 
         # Display the current image
         cv2.imshow(window_name, fullscreen_current_img)
-        key = cv2.waitKey(delay)
+        key = cv2.waitKey(DELAY)
 
         # Crossfade to the next image
-        for alpha in np.linspace(0, 1, transition_duration // 10):
+        for alpha in np.linspace(0, 1, TRANSITION_DURATION // 10):
             blended_img = crossfade_images(fullscreen_next_img, fullscreen_current_img, alpha)
             cv2.imshow(window_name, blended_img)
             key = cv2.waitKey(10)
