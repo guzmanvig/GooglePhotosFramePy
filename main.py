@@ -57,15 +57,15 @@ def get_fullscreen_image(image_path, window_name):
     # Add date to the image
     current_date = datetime.datetime.now().strftime('%d de %B')
 
-    date_font_scale = 3
-    date_thickness = 3
+    date_font_scale = 1
+    date_thickness = 1
     date_width = cv2.getTextSize(current_date, cv2.FONT_HERSHEY_DUPLEX, date_font_scale, date_thickness)[0][0]
 
     # Calculate where to start the date text
-    date_start_point_offset_from_time = time_width / 2 - date_width / 2
+    date_start_point_offset_from_time = round((time_width / 2) - (date_width / 2))
 
     # Display date
-    cv2.putText(result_img, current_time, (time_x_position + date_start_point_offset_from_time, time_y_position), cv2.FONT_HERSHEY_DUPLEX, time_font_scale, (255, 255, 255), time_thickness)
+    cv2.putText(result_img, current_date, (time_x_position + date_start_point_offset_from_time, time_y_position), cv2.FONT_HERSHEY_DUPLEX, date_font_scale, (255, 255, 255), date_thickness)
 
     return result_img
 
