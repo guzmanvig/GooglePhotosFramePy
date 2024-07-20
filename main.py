@@ -39,22 +39,29 @@ def get_fullscreen_image(image_path, window_name):
         screen_height = new_height
 
     if config['time_text']['show']:
-        time_x_position = config['time_text']['start_position_X']
-        time_y_position = screen_height - config['time_text']['start_position_Y']
 
-        # Add time to the image
         current_time = datetime.datetime.now().strftime(config['time_text']['format'])
         time_font_scale = config['time_text']['font_scale']
         time_font_thickness = config['time_text']['font_thickness']
         time_font_color = config['time_text']['font_color']
 
+        # Get length of the time text
+        time_width = cv2.getTextSize(current_time, cv2.FONT_HERSHEY_DUPLEX, time_font_scale, time_font_thickness)[0][0]
+
+        if config['time_text']['relative_position']:
+            if config['time_text']['relative_position'] == 'TOP_CENTER':
+                time_x_position = (screen_width - time_width) // 2
+                time_y_position = config['time_text']['margin_top']
+            else:
+                raise ValueError('Invalid value for time_text.relative_position')
+        else:
+            time_x_position = config['time_text']['start_position_X']
+            time_y_position = screen_height - config['time_text']['start_position_Y']
+
         # Display time
         cv2.putText(result_img, current_time, (time_x_position, time_y_position), cv2.FONT_HERSHEY_DUPLEX, time_font_scale, time_font_color, time_font_thickness)
 
         if config['date_text']['show']:
-            # Get length of the time text
-            time_width = cv2.getTextSize(current_time, cv2.FONT_HERSHEY_DUPLEX, time_font_scale, time_font_thickness)[0][0]
-
             # Add date to the image
             current_date = datetime.datetime.now().strftime(config['date_text']['format'])
 

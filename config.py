@@ -16,8 +16,10 @@ config = {
     },
     'time_text': {
         'show': True,
-        'start_position_X': 20,
-        'start_position_Y': 100,
+        'relative_position': 'TOP_CENTER',
+        'margin_top': 15,
+        'start_position_X': 20,  # If these 2 are set, the previous ones are ignored
+        'start_position_Y': 100,  # Only one available at the moment
         'format': '%H:%M',
         'font_scale': 3,
         'font_thickness': 4,

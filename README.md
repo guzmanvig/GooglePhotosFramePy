@@ -4,6 +4,8 @@ potential features:
 create executable bash
 better error handling especially for when lossing connection
 
+add album support
+
 create a service? so it runs when computer starts or restarts if dies
 
 display metadata of photos (like location and date)
