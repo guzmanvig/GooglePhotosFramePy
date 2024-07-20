@@ -45,8 +45,8 @@ def get_fullscreen_image(image_path, window_name):
 
     # Add time to the image
     current_time = datetime.datetime.now().strftime("%H:%M")
-    time_font_scale = 5
-    time_thickness = 5
+    time_font_scale = 3
+    time_thickness = 4
 
     # Display time
     cv2.putText(result_img, current_time, (time_x_position, time_y_position), cv2.FONT_HERSHEY_DUPLEX, time_font_scale, (255, 255, 255), time_thickness)
@@ -69,7 +69,7 @@ def get_fullscreen_image(image_path, window_name):
     date_x_offset_from_time = round((time_width / 2) - (date_width / 2))
 
     # Calculate where to start the date text in the y-axis
-    margin_between_time_and_date = 10
+    margin_between_time_and_date = 15
     date_y_offset_from_time = date_height + margin_between_time_and_date
 
     # Display date
