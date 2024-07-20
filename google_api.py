@@ -5,11 +5,9 @@ import requests
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
+from config import config
 
 SCOPES = ['https://www.googleapis.com/auth/photoslibrary.readonly']
-
-START_DATE = {"year": 2024, "month": 3, "day": 28}
-END_DATE = {"year": 2024, "month": 6, "day": 21}
 
 all_photo_urls = []
 
@@ -38,12 +36,7 @@ def get_token():
 
 
 def google_api_search(page_token):
-    date_ranges = [
-        {
-            "startDate": START_DATE,
-            "endDate": END_DATE
-        }
-    ]
+    date_ranges = config['photo_selection']['range']
 
     response = requests.post(
         "https://photoslibrary.googleapis.com/v1/mediaItems:search",

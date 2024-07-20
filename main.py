@@ -5,11 +5,9 @@ import locale
 import cv2
 import numpy as np
 from google_api import download_random_photos
+from config import config
 
-locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
-
-DELAY = 10000  # Delay duration in milliseconds
-TRANSITION_DURATION = 500  # Transition duration in milliseconds
+locale.setlocale(locale.LC_TIME, config['general']['locale'])
 
 
 def get_fullscreen_image(image_path, window_name):
@@ -40,28 +38,30 @@ def get_fullscreen_image(image_path, window_name):
         result_img = cv2.copyMakeBorder(scaled_img, padding, padding, 0, 0, cv2.BORDER_CONSTANT, value=(0, 0, 0))
         screen_height = new_height
 
-    time_x_position = 20
-    time_y_position = screen_height - 100
+    time_x_position = config['time_text']['start_position_X']
+    time_y_position = screen_height - config['time_text']['start_position_Y']
 
     # Add time to the image
-    current_time = datetime.datetime.now().strftime("%H:%M")
-    time_font_scale = 5
-    time_thickness = 5
+    current_time = datetime.datetime.now().strftime(config['time_text']['format'])
+    time_font_scale = config['time_text']['font_scale']
+    time_font_thickness = config['time_text']['font_thickness']
+    time_font_color = config['time_text']['font_color']
 
     # Display time
-    cv2.putText(result_img, current_time, (time_x_position, time_y_position), cv2.FONT_HERSHEY_DUPLEX, time_font_scale, (255, 255, 255), time_thickness)
+    cv2.putText(result_img, current_time, (time_x_position, time_y_position), cv2.FONT_HERSHEY_DUPLEX, time_font_scale, time_font_color, time_font_thickness)
 
     # Get length of the time text
-    time_width = cv2.getTextSize(current_time, cv2.FONT_HERSHEY_DUPLEX, time_font_scale, time_thickness)[0][0]
+    time_width = cv2.getTextSize(current_time, cv2.FONT_HERSHEY_DUPLEX, time_font_scale, time_font_thickness)[0][0]
 
     # Add date to the image
-    current_date = datetime.datetime.now().strftime('%d de %B')
+    current_date = datetime.datetime.now().strftime(config['date_text']['format'])
 
-    date_font_scale = 1
-    date_thickness = 1
+    date_font_scale = config['date_text']['font_scale']
+    date_font_thickness = config['date_text']['font_thickness']
+    date_font_color = config['date_text']['font_color']
 
     # Calculate width and height of the date text so we know where to position it
-    date_width_and_height = cv2.getTextSize(current_date, cv2.FONT_HERSHEY_DUPLEX, date_font_scale, date_thickness)[0]
+    date_width_and_height = cv2.getTextSize(current_date, cv2.FONT_HERSHEY_DUPLEX, date_font_scale, date_font_thickness)[0]
     date_width = date_width_and_height[0]
     date_height = date_width_and_height[1]
 
@@ -69,11 +69,11 @@ def get_fullscreen_image(image_path, window_name):
     date_x_offset_from_time = round((time_width / 2) - (date_width / 2))
 
     # Calculate where to start the date text in the y-axis
-    margin_between_time_and_date = 10
-    date_y_offset_from_time = date_height + margin_between_time_and_date
+    margin_top_from_time = config['date_text']['margin_top_from_time']
+    date_y_offset_from_time = date_height + margin_top_from_time
 
     # Display date
-    cv2.putText(result_img, current_date, (time_x_position + date_x_offset_from_time, time_y_position + date_y_offset_from_time), cv2.FONT_HERSHEY_DUPLEX, date_font_scale, (255, 255, 255), date_thickness)
+    cv2.putText(result_img, current_date, (time_x_position + date_x_offset_from_time, time_y_position + date_y_offset_from_time), cv2.FONT_HERSHEY_DUPLEX, date_font_scale, date_font_color, date_font_thickness)
 
     return result_img
 
@@ -104,6 +104,9 @@ def main_loop():
     # Wait for the initial download to finish
     asyncio.run(download_random_photos(number_of_photos=2, photo_names=["0", "1"]))
 
+    delay_between_photos = config['slideshow']['delay_between_photos']
+    transition_animation_duration = config['slideshow']['transition_animation_duration']
+
     image_folder = "photos/"  # Images destination
     images = os.listdir(image_folder)
     images.sort()
@@ -130,10 +133,10 @@ def main_loop():
 
         # Display the current image
         cv2.imshow(window_name, fullscreen_current_img)
-        key = cv2.waitKey(DELAY)
+        key = cv2.waitKey(delay_between_photos)
 
         # Crossfade to the next image
-        for alpha in np.linspace(0, 1, TRANSITION_DURATION // 10):
+        for alpha in np.linspace(0, 1, transition_animation_duration // 10):
             blended_img = crossfade_images(fullscreen_next_img, fullscreen_current_img, alpha)
             cv2.imshow(window_name, blended_img)
             key = cv2.waitKey(10)
