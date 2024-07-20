@@ -45,13 +45,15 @@ def get_fullscreen_image(image_path, window_name):
         time_font_thickness = config['time_text']['font_thickness']
         time_font_color = config['time_text']['font_color']
 
-        # Get length of the time text
-        time_width = cv2.getTextSize(current_time, cv2.FONT_HERSHEY_DUPLEX, time_font_scale, time_font_thickness)[0][0]
+        # Get width and height of the time text
+        time_width_and_height = cv2.getTextSize(current_time, cv2.FONT_HERSHEY_DUPLEX, time_font_scale, time_font_thickness)[0]
+        time_width = time_width_and_height[0]
+        time_height = time_width_and_height[1]
 
         if config['time_text']['relative_position']:
             if config['time_text']['relative_position'] == 'TOP_CENTER':
                 time_x_position = (screen_width - time_width) // 2
-                time_y_position = config['time_text']['margin_top']
+                time_y_position = time_height // 2 + config['time_text']['margin_top']
             else:
                 raise ValueError('Invalid value for time_text.relative_position')
         else:
