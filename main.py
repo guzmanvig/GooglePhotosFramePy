@@ -13,6 +13,9 @@ locale.setlocale(locale.LC_TIME, config['general']['locale'])
 def get_fullscreen_image(image_path, window_name):
     img = cv2.imread(image_path)
 
+    if config['slideshow']['rotate_photos']:
+        img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+
     # Get the dimensions of the image and the screen
     img_height, img_width = img.shape[:2]
     screen_width, screen_height = cv2.getWindowImageRect(window_name)[2:4]
@@ -38,42 +41,44 @@ def get_fullscreen_image(image_path, window_name):
         result_img = cv2.copyMakeBorder(scaled_img, padding, padding, 0, 0, cv2.BORDER_CONSTANT, value=(0, 0, 0))
         screen_height = new_height
 
-    time_x_position = config['time_text']['start_position_X']
-    time_y_position = screen_height - config['time_text']['start_position_Y']
+    if config['time_text']['show']:
+        time_x_position = config['time_text']['start_position_X']
+        time_y_position = screen_height - config['time_text']['start_position_Y']
 
-    # Add time to the image
-    current_time = datetime.datetime.now().strftime(config['time_text']['format'])
-    time_font_scale = config['time_text']['font_scale']
-    time_font_thickness = config['time_text']['font_thickness']
-    time_font_color = config['time_text']['font_color']
+        # Add time to the image
+        current_time = datetime.datetime.now().strftime(config['time_text']['format'])
+        time_font_scale = config['time_text']['font_scale']
+        time_font_thickness = config['time_text']['font_thickness']
+        time_font_color = config['time_text']['font_color']
 
-    # Display time
-    cv2.putText(result_img, current_time, (time_x_position, time_y_position), cv2.FONT_HERSHEY_DUPLEX, time_font_scale, time_font_color, time_font_thickness)
+        # Display time
+        cv2.putText(result_img, current_time, (time_x_position, time_y_position), cv2.FONT_HERSHEY_DUPLEX, time_font_scale, time_font_color, time_font_thickness)
 
-    # Get length of the time text
-    time_width = cv2.getTextSize(current_time, cv2.FONT_HERSHEY_DUPLEX, time_font_scale, time_font_thickness)[0][0]
+        if config['date_text']['show']:
+            # Get length of the time text
+            time_width = cv2.getTextSize(current_time, cv2.FONT_HERSHEY_DUPLEX, time_font_scale, time_font_thickness)[0][0]
 
-    # Add date to the image
-    current_date = datetime.datetime.now().strftime(config['date_text']['format'])
+            # Add date to the image
+            current_date = datetime.datetime.now().strftime(config['date_text']['format'])
 
-    date_font_scale = config['date_text']['font_scale']
-    date_font_thickness = config['date_text']['font_thickness']
-    date_font_color = config['date_text']['font_color']
+            date_font_scale = config['date_text']['font_scale']
+            date_font_thickness = config['date_text']['font_thickness']
+            date_font_color = config['date_text']['font_color']
 
-    # Calculate width and height of the date text so we know where to position it
-    date_width_and_height = cv2.getTextSize(current_date, cv2.FONT_HERSHEY_DUPLEX, date_font_scale, date_font_thickness)[0]
-    date_width = date_width_and_height[0]
-    date_height = date_width_and_height[1]
+            # Calculate width and height of the date text so we know where to position it
+            date_width_and_height = cv2.getTextSize(current_date, cv2.FONT_HERSHEY_DUPLEX, date_font_scale, date_font_thickness)[0]
+            date_width = date_width_and_height[0]
+            date_height = date_width_and_height[1]
 
-    # Calculate where to start the date text in the x-axis
-    date_x_offset_from_time = round((time_width / 2) - (date_width / 2))
+            # Calculate where to start the date text in the x-axis
+            date_x_offset_from_time = round((time_width / 2) - (date_width / 2))
 
-    # Calculate where to start the date text in the y-axis
-    margin_top_from_time = config['date_text']['margin_top_from_time']
-    date_y_offset_from_time = date_height + margin_top_from_time
+            # Calculate where to start the date text in the y-axis
+            margin_top_from_time = config['date_text']['margin_top_from_time']
+            date_y_offset_from_time = date_height + margin_top_from_time
 
-    # Display date
-    cv2.putText(result_img, current_date, (time_x_position + date_x_offset_from_time, time_y_position + date_y_offset_from_time), cv2.FONT_HERSHEY_DUPLEX, date_font_scale, date_font_color, date_font_thickness)
+            # Display date
+            cv2.putText(result_img, current_date, (time_x_position + date_x_offset_from_time, time_y_position + date_y_offset_from_time), cv2.FONT_HERSHEY_DUPLEX, date_font_scale, date_font_color, date_font_thickness)
 
     return result_img
 
