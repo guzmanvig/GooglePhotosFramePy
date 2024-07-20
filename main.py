@@ -54,6 +54,9 @@ def get_fullscreen_image(image_path, window_name):
             if config['time_text']['relative_position'] == 'TOP_CENTER':
                 time_x_position = (screen_width - time_width) // 2
                 time_y_position = time_height + config['time_text']['margin_top']
+            elif config['time_text']['relative_position'] == 'BOTTOM_CENTER':
+                time_x_position = (screen_width - time_width) // 2
+                time_y_position = screen_height - config['time_text']['margin_bottom']
             else:
                 raise ValueError('Invalid value for time_text.relative_position')
         else:
@@ -71,20 +74,31 @@ def get_fullscreen_image(image_path, window_name):
             date_font_thickness = config['date_text']['font_thickness']
             date_font_color = config['date_text']['font_color']
 
-            # Calculate width and height of the date text so we know where to position it
-            date_width_and_height = cv2.getTextSize(current_date, cv2.FONT_HERSHEY_DUPLEX, date_font_scale, date_font_thickness)[0]
-            date_width = date_width_and_height[0]
-            date_height = date_width_and_height[1]
+            if config['date_text']['relative_position']:
+                # Calculate width and height of the date text
+                date_width_and_height = cv2.getTextSize(current_date, cv2.FONT_HERSHEY_DUPLEX, date_font_scale, date_font_thickness)[0]
+                date_width = date_width_and_height[0]
+                date_height = date_width_and_height[1]
 
-            # Calculate where to start the date text in the x-axis
-            date_x_offset_from_time = round((time_width / 2) - (date_width / 2))
+                # Calculate where to start the date text in the x-axis so it's centered with the time text
+                date_x_offset_from_time = round((time_width / 2) - (date_width / 2))
 
-            # Calculate where to start the date text in the y-axis
-            margin_top_from_time = config['date_text']['margin_top_from_time']
-            date_y_offset_from_time = date_height + margin_top_from_time
+                spacing_from_time = config['date_text']['spacing_from_time']
+                if config['date_text']['relative_position'] == 'CENTER_ABOVE_TIME':
+                    date_x_position = time_x_position + date_x_offset_from_time
+                    date_y_position = time_y_position + time_height + spacing_from_time
+
+                elif config['date_text']['relative_position'] == 'CENTER_BELOW_TIME':
+                    date_x_position = time_x_position + date_x_offset_from_time
+                    date_y_position = time_y_position + date_height + spacing_from_time
+                else:
+                    raise ValueError('Invalid value for time_text.relative_position')
+            else:
+                date_x_position = config['date_text']['start_position_X']
+                date_y_position = screen_height - config['date_text']['start_position_Y']
 
             # Display date
-            cv2.putText(result_img, current_date, (time_x_position + date_x_offset_from_time, time_y_position + date_y_offset_from_time), cv2.FONT_HERSHEY_DUPLEX, date_font_scale, date_font_color, date_font_thickness)
+            cv2.putText(result_img, current_date, (date_x_position, time_y_position + date_y_position), cv2.FONT_HERSHEY_DUPLEX, date_font_scale, date_font_color, date_font_thickness)
 
     return result_img
 
