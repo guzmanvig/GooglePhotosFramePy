@@ -53,7 +53,7 @@ def get_fullscreen_image(image_path, window_name):
         if config['time_text']['relative_position']:
             if config['time_text']['relative_position'] == 'TOP_CENTER':
                 time_x_position = (screen_width - time_width) // 2
-                time_y_position = time_height // 2 + config['time_text']['margin_top']
+                time_y_position = time_height + config['time_text']['margin_top']
             else:
                 raise ValueError('Invalid value for time_text.relative_position')
         else:
