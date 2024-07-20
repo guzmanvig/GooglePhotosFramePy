@@ -150,4 +150,5 @@ def main_loop():
 
 
 if __name__ == '__main__':
+    print('Starting slideshow... Press "q" to quit.')
     main_loop()

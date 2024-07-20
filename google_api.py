@@ -36,7 +36,7 @@ def get_token():
 
 
 def google_api_search(page_token):
-    date_ranges = config['photo_selection']['range']
+    date_ranges = config['photo_selection']['ranges']
 
     response = requests.post(
         "https://photoslibrary.googleapis.com/v1/mediaItems:search",
@@ -68,9 +68,13 @@ def google_api_search(page_token):
 def get_all_media_items():
     photo_urls, next_page_token = google_api_search("")
     all_photo_urls.extend(photo_urls)
+    page = 1
     while next_page_token:
+        print(f"Getting Google Photos page {page}...")
         photo_urls, next_page_token = google_api_search(next_page_token)
         all_photo_urls.extend(photo_urls)
+        page += 1
+    print("All photos have been retrieved.")
 
 
 async def download_random_photos(number_of_photos, photo_names):
