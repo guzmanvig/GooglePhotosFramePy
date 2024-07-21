@@ -6,7 +6,7 @@ Check `config.py` for the full configuration options.
 
 ## My use case
 
-I have an old Windows tablet that is pretty much useless. I couldn't find any available software that would turn it into a digital photo frame that would display my Google Photos. So I decided to create my own.
+I have an old Windows tablet that is pretty much useless. I couldn't find any free, open-source, software that would turn it into a digital photo frame that would display my Google Photos. So I decided to create my own.
 
 insert gif here
 
