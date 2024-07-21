@@ -4,6 +4,8 @@ This is a Google Photos Frame in Python. It uses the Google Photos API to get th
 
 Check `config.py` for the full configuration options.
 
+Tested in: Windows 10, Ubuntu 20.
+
 ## My use case
 
 I have an old Windows tablet that is pretty much useless. I couldn't find any free, open-source, software that would turn it into a digital photo frame that would display my Google Photos. So I decided to create my own.
@@ -34,6 +36,8 @@ guzmanvigliecca@gmail.com
 
 ## How to run
 
+Pre-requisite: Python 3.12 installed (didn't test lower versions, but it's possible it works too)
+
 Because this app is not officially published in Google yet, you need to create your own project and credentials. 
 
 1 - Go to the Google Developers Console and create a new project.
@@ -50,7 +54,9 @@ Because this app is not officially published in Google yet, you need to create y
 
 7 - Download the credentials file and save it as `client_secret.json` in the root folder of this project.
 
-Once this is done, create a virtual environment and install the requirements:
+Once this is done, run `bash run.sh` if you are in Linux or `run.bat` if you are in Linux. This should start the program
+
+You can also manually create a virtual environment and install the requirements:
 
 1 - Run `python -m venv venv` to create a virtual environment.
 

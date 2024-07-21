@@ -12,7 +12,7 @@ config = {
         'transition_animation_duration': 500,  # In milliseconds
     },
     'general': {
-        'locale': 'es_ES.UTF-8'
+        'locale': 'es_ES.UTF-8'  # For English use en_US.UTF-8
     },
     'time_text': {
         'show': True,

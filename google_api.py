@@ -13,6 +13,9 @@ all_photo_urls = []
 
 
 def get_token():
+    if not os.path.exists("client_secret.json"):
+        raise FileNotFoundError("Google Project credentials not found. Create them and save them as client_secret.json")
+
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -91,6 +94,10 @@ async def download_random_photos(number_of_photos, photo_names):
     # Remove them from the list
     for photo_url in random_photos_urls:
         all_photo_urls.remove(photo_url)
+
+    # Create directory for photos if it doesn't exist
+    if not os.path.exists('photos'):
+        os.makedirs('photos')
 
     # Download the photos
     for i, photo_url in enumerate(random_photos_urls):
