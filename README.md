@@ -1,7 +1,6 @@
 # GooglePhotosFramePy: A Google Photos Frame in Python
 
 This is a Google Photos Frame in Python. It uses the Google Photos API to get the photos and display them randomly in fullscreen.
-As of now, these are the features that are implemented and are customizable:
 
 Check `config.py` for the full configuration options.
 
