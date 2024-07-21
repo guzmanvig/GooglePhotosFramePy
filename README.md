@@ -38,6 +38,8 @@ guzmanvigliecca@gmail.com
 
 Pre-requisite: Python 3.12 installed (didn't test lower versions, but it's possible it works too)
 
+### Google Photos API setup
+
 Because this app is not officially published in Google yet, you need to create your own project and credentials. 
 
 1 - Go to the Google Developers Console and create a new project.
@@ -54,9 +56,12 @@ Because this app is not officially published in Google yet, you need to create y
 
 7 - Download the credentials file and save it as `client_secret.json` in the root folder of this project.
 
-Once this is done, run `bash run.sh` if you are in Linux or `run.bat` if you are in Linux. This should start the program
+### Running the app
 
-You can also manually create a virtual environment and install the requirements:
+Once the previous step is done, run `bash run.sh` if you are in Linux or `run.bat` if you are in Linux. This should start the program.
+The first time the scripts run, the requirements are installed so it may take some time.
+
+You can also manually create a virtual environment and install the requirements (which is exactly what the scripts do):
 
 1 - Run `python -m venv venv` to create a virtual environment.
 
