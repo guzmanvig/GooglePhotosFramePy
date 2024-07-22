@@ -8,7 +8,7 @@ if not exist venv (
     echo Installing requirements...
     call venv\Scripts\activate
     pip install -r requirements.txt
-    deactivate
+    call venv\Scripts\deactivate
 )
 
 REM Activate the virtual environment

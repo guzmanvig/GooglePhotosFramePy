@@ -86,7 +86,7 @@ def get_fullscreen_image(image_path, window_name):
                 spacing_from_time = config['date_text']['spacing_from_time']
                 if config['date_text']['relative_position'] == 'CENTER_ABOVE_TIME':
                     date_x_position = time_x_position + date_x_offset_from_time
-                    date_y_position = time_y_position + time_height + spacing_from_time
+                    date_y_position = time_y_position - time_height - spacing_from_time
 
                 elif config['date_text']['relative_position'] == 'CENTER_BELOW_TIME':
                     date_x_position = time_x_position + date_x_offset_from_time
@@ -98,7 +98,7 @@ def get_fullscreen_image(image_path, window_name):
                 date_y_position = screen_height - config['date_text']['start_position_Y']
 
             # Display date
-            cv2.putText(result_img, current_date, (date_x_position, time_y_position + date_y_position), cv2.FONT_HERSHEY_DUPLEX, date_font_scale, date_font_color, date_font_thickness)
+            cv2.putText(result_img, current_date, (date_x_position, date_y_position), cv2.FONT_HERSHEY_DUPLEX, date_font_scale, date_font_color, date_font_thickness)
 
     return result_img
 
