@@ -4,7 +4,7 @@ This is a Google Photos Frame in Python. It uses the Google Photos API to get th
 
 Check `config.py` for the full configuration options.
 
-Tested in: Windows 10, Ubuntu 20.
+Tested in: Windows 10, Ubuntu 20, MacOS 14.5
 
 ## My use case
 
@@ -17,8 +17,8 @@ insert gif here
 At the moment, the app serves the purpose I needed it for. However, there are some features that could be added to make it more useful for other people.
 I'm down to do them if someone requests them.
 
-- [ ] Create a Batch script for Windows to start the program (or Bash for Linux) and/or package it
-- [ ] Support other operating systems (macOS, Linux, mobile) (Note: At the moment I only tried it in Windows, perhaps MacOS and Linux already work)
+- [x] Create a Batch script for Windows to start the program (or Bash for Linux).
+- [x] Support other operating systems (macOS, Linux)
 - [ ] Better error handling, especially for when losing connection
 - [ ] Windows scheduler to start the app when the computer starts and turn off at night
 - [ ] Add album selection support
