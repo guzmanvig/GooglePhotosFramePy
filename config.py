@@ -10,6 +10,8 @@ config = {
     'slideshow': {
         'delay_between_photos': 10000,  # In milliseconds
         'transition_animation_duration': 500,  # In milliseconds
+        'display_width': 0,  # These 2 can be left as 0. Specify them only if you don't get fullscreen (happens in some devices).
+        'display_height': 0
     },
     'general': {
         'locale': 'es_ES.UTF-8'  # For English use en_US.UTF-8

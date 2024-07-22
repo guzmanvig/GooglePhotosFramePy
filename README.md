@@ -58,7 +58,7 @@ Because this app is not officially published in Google yet, you need to create y
 
 ### Running the app
 
-Once the previous step is done, run `bash run.sh` if you are in Linux or `run.bat` if you are in Linux. This should start the program.
+Once the previous step is done, run `bash run.sh` if you are in Linux or `.\run.bat` if you are in Linux. This should start the program.
 The first time the scripts run, the requirements are installed so it may take some time.
 
 You can also manually create a virtual environment and install the requirements (which is exactly what the scripts do):
@@ -79,3 +79,5 @@ Then, the app will get all the photos download links from the date ranges you se
 take a while depending on the number of photos you have. Then, it will display it in fullscreen randomly.
 
 To quit the app press `q` (repeatedly if needed).
+
+If you don't see the slideshow in fullscreen, try specifying your screen resolution in the `display_width` and `display_height` fields in the config file.

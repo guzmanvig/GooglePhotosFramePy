@@ -15,7 +15,12 @@ def get_fullscreen_image(image_path, window_name):
 
     # Get the dimensions of the image and the screen
     img_height, img_width = img.shape[:2]
-    screen_width, screen_height = cv2.getWindowImageRect(window_name)[2:4]
+    if config['slideshow']['display_width'] and config['slideshow']['display_height']:
+        screen_width = config['slideshow']['display_width']
+        screen_height = config['slideshow']['display_height']
+    else:
+        # Get if from the fullscreen window
+        screen_width, screen_height = cv2.getWindowImageRect(window_name)[2:4]
 
     # Calculate aspect ratios
     img_aspect_ratio = img_width / img_height
@@ -127,7 +132,7 @@ async def async_download_photo(index):
 
 def main_loop():
     # Wait for the initial download to finish
-    asyncio.run(download_random_photos(number_of_photos=2, photo_names=["0", "1"]))
+    asyncio.run(download_random_photos(number_of_photos=5, photo_names=["0", "1", "2", "3", "4"]))
 
     delay_between_photos = config['slideshow']['delay_between_photos']
     transition_animation_duration = config['slideshow']['transition_animation_duration']
