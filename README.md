@@ -74,3 +74,8 @@ Then, the app will get all the photos download links from the date ranges you se
 take a while depending on the number of photos you have. Then, it will display it in fullscreen randomly.
 
 To quit the app press `q` (repeatedly if needed).
+
+
+## Window Scripts
+
+There are a bunch of Task Scheduler tasks and scripts in the `window_scripts` folder, with the goal of turning on and off the photo frame and computer during sleep hours, and turn down the screen brightness at night. More information on the readme inside the folder
