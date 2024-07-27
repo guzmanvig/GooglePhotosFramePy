@@ -4,7 +4,7 @@ This is a Google Photos Frame in Python. It uses the Google Photos API to get th
 
 Check `config.py` for the full configuration options.
 
-Tested in: Windows 10, Ubuntu 20.
+Tested in: Windows 10, Ubuntu 20, MacOS 14.5
 
 ## My use case
 
@@ -17,8 +17,8 @@ insert gif here
 At the moment, the app serves the purpose I needed it for. However, there are some features that could be added to make it more useful for other people.
 I'm down to do them if someone requests them.
 
-- [ ] Create a Batch script for Windows to start the program (or Bash for Linux) and/or package it
-- [ ] Support other operating systems (macOS, Linux, mobile) (Note: At the moment I only tried it in Windows, perhaps MacOS and Linux already work)
+- [x] Create a Batch script for Windows to start the program (or Bash for Linux).
+- [x] Support other operating systems (macOS, Linux)
 - [ ] Better error handling, especially for when losing connection
 - [ ] Windows scheduler to start the app when the computer starts and turn off at night
 - [ ] Add album selection support
@@ -38,6 +38,8 @@ guzmanvigliecca@gmail.com
 
 Pre-requisite: Python 3.12 installed (didn't test lower versions, but it's possible it works too)
 
+### Google Photos API setup
+
 Because this app is not officially published in Google yet, you need to create your own project and credentials. 
 
 1 - Go to the Google Developers Console and create a new project.
@@ -54,9 +56,12 @@ Because this app is not officially published in Google yet, you need to create y
 
 7 - Download the credentials file and save it as `client_secret.json` in the root folder of this project.
 
-Once this is done, run `bash run.sh` if you are in Linux or `run.bat` if you are in Linux. This should start the program
+### Running the app
 
-You can also manually create a virtual environment and install the requirements:
+Once the previous step is done, run `bash run.sh` if you are in Linux or `.\run.bat` if you are in Linux. This should start the program.
+The first time the scripts run, the requirements are installed so it may take some time.
+
+You can also manually create a virtual environment and install the requirements (which is exactly what the scripts do):
 
 1 - Run `python -m venv venv` to create a virtual environment.
 
@@ -75,7 +80,8 @@ take a while depending on the number of photos you have. Then, it will display i
 
 To quit the app press `q` (repeatedly if needed).
 
+Note: If you don't see the slideshow in fullscreen, try specifying your screen resolution in the `display_width` and `display_height` fields in the config file.
 
 ## Window Scripts
 
-There are a bunch of Task Scheduler tasks and scripts in the `window_scripts` folder, with the goal of turning on and off the photo frame and computer during sleep hours, and turn down the screen brightness at night. More information on the readme inside the folder
+There are a bunch of Task Scheduler tasks and scripts in the `window_scripts` folder, with the goal of turning on and off the photo frame and computer during sleep hours, and turn down the screen brightness at night. More information on the readme inside the folder.
