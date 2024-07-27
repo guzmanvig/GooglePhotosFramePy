@@ -180,5 +180,9 @@ def main_loop():
 
 
 if __name__ == '__main__':
-    print('Starting slideshow... Press "q" to quit.')
-    main_loop()
+    try:
+        print('Starting slideshow... Press "q" to quit.')
+        main_loop()
+    except Exception as e:
+        print(e)
+        input("Something went wrong while running photo frame, press any key to exit")
