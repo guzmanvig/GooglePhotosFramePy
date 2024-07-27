@@ -15,7 +15,8 @@ REM Activate the virtual environment
 call venv\Scripts\activate
 
 REM Run the main.py script
-python main.py
+REM Using absolute path so it can be run throw window task scheduler
+python C:\Users\Guz\Desktop\google_photos_frame\main.py
 
 REM Deactivate the virtual environment
 deactivate
