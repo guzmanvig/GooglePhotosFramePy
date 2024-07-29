@@ -1,6 +1,8 @@
 @echo off
 setlocal
 
+CD /D %root%
+
 :: Check if brightness parameter is provided
 if "%1"=="" (
     echo Usage: %0 brightness
