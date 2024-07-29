@@ -11,7 +11,16 @@ config = {
         'delay_between_photos': 10000,  # In milliseconds
         'transition_animation_duration': 500,  # In milliseconds
         'display_width': 0,  # These 2 can be left as 0. Specify them only if you don't get fullscreen (happens in some devices).
-        'display_height': 0
+        'display_height': 0,
+        'pause': {
+            'start': '11:30 PM',  # If set, the slideshow will pause at this time and will show a black screen. In windows it also lowers the brightness to 0.
+            'end': '09:00 AM'
+        },
+        'low_brightness': {
+            'start': '08:15 PM',  # If set, the screen will dim at this time. Only for Windows
+            'end': '09:00 AM',
+            'brightness': 30  # From 0 to 100
+        }
     },
     'general': {
         'locale': 'es_ES.UTF-8'  # For English use en_US.UTF-8

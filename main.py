@@ -2,6 +2,11 @@ import asyncio
 import datetime
 import os
 import locale
+import platform
+import subprocess
+import time
+import traceback
+
 import cv2
 import numpy as np
 from google_api import download_random_photos
@@ -108,6 +113,16 @@ def get_fullscreen_image(image_path, window_name):
     return result_img
 
 
+def get_black_image(window_name):
+    if config['slideshow']['display_width'] and config['slideshow']['display_height']:
+        screen_width = config['slideshow']['display_width']
+        screen_height = config['slideshow']['display_height']
+    else:
+        # Get if from the fullscreen window
+        screen_width, screen_height = cv2.getWindowImageRect(window_name)[2:4]
+    return np.zeros((screen_height, screen_width, 3), np.uint8)
+
+
 def crossfade_images(img1, img2, alpha):
     img1 = cv2.resize(img1, (img2.shape[1], img2.shape[0]))
     img2 = cv2.resize(img2, (img1.shape[1], img1.shape[0]))
@@ -130,7 +145,44 @@ async def async_download_photo(index):
     )
 
 
+def is_now_in_time_range(time_range):
+    now = datetime.datetime.now().time()
+    start_time = datetime.datetime.strptime(time_range['start'], '%I:%M %p').time()
+    end_time = datetime.datetime.strptime(time_range['end'], '%I:%M %p').time()
+
+    if start_time < end_time:
+        return start_time <= now <= end_time
+    else:  # Over midnight
+        return now >= start_time or now <= end_time
+
+
+def wait_til_pause_is_over():
+    while is_now_in_time_range(config['slideshow']['pause']):
+        time.sleep(60)
+
+
+def platform_is_windows():
+    return platform.system() == 'Windows'
+
+
+def set_brightness(brightness):
+    if platform_is_windows():
+        try:
+            subprocess.run(['window_scripts/nircmd.exe', 'setbrightness', str(brightness)], check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Failed to set brightness: {e}")
+
+
+def show_black_photo(window_name):
+    black_image = get_black_image(window_name)
+    cv2.imshow(window_name, black_image)
+    cv2.waitKey(10)
+
+
 def main_loop():
+    # Check the platform. Used to determine if we can adjust the screen brightness
+    os_is_windows = platform_is_windows()
+
     # Wait for the initial download to finish
     asyncio.run(download_random_photos(number_of_photos=5, photo_names=["0", "1", "2", "3", "4"]))
 
@@ -147,8 +199,32 @@ def main_loop():
     cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
     cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
+    current_brightness = 100
     current_img_index = 0
     while True:
+
+        # Check if we are paused
+        if config['slideshow']['pause']['start'] and config['slideshow']['pause']['end']:
+            if is_now_in_time_range(config['slideshow']['pause']):
+                show_black_photo(window_name)
+                set_brightness(0)
+                wait_til_pause_is_over()
+                set_brightness(100)
+
+        # Check if we need to adjust the brightness (only for Windows)
+        if os_is_windows and config['slideshow']['low_brightness']['start'] and config['slideshow']['low_brightness']['end']:
+            low_brightness = config['slideshow']['low_brightness']['brightness']
+            if is_now_in_time_range(config['slideshow']['low_brightness']):
+                if current_brightness != low_brightness:
+                    set_brightness(low_brightness)
+                    current_brightness = low_brightness
+            else:
+                if current_brightness == low_brightness:
+                    set_brightness(100)
+                    current_brightness = 100
+
+        # Image logic
+
         next_img_index = next_index(current_img_index, number_of_images)
 
         # Download image of the following iteration async so it's ready
@@ -184,5 +260,5 @@ if __name__ == '__main__':
         print('Starting slideshow... Press "q" to quit.')
         main_loop()
     except Exception as e:
-        print(e)
+        traceback.print_exc()
         input("Something went wrong while running photo frame, press any key to exit")

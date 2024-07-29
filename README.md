@@ -1,8 +1,8 @@
-# GooglePhotosFramePy: A Google Photos Frame in Python
+# GooglePhotosFramePy: A Configurable Google Photos Frame in Python
 
 This is a Google Photos Frame in Python. It uses the Google Photos API to get the photos and display them randomly in fullscreen.
 
-Check `config.py` for the full configuration options.
+Has a bunch of configuration options such as displaying time and date, pausing, dim brightness, etc.Check `config.py` for the full configuration options.
 
 Tested in: Windows 10, Ubuntu 20, MacOS 14.5
 
@@ -20,7 +20,8 @@ I'm down to do them if someone requests them.
 - [x] Create a Batch script for Windows to start the program (or Bash for Linux).
 - [x] Support other operating systems (macOS, Linux)
 - [ ] Better error handling, especially for when losing connection
-- [ ] Windows scheduler to start the app when the computer starts and turn off at night
+- [x] Windows scheduler to start the app when the computer starts and turn off at night
+- [x] Added configurable pause and brightness dim
 - [ ] Add album selection support
 - [ ] Display metadata of photos (like the photo date)
 - [ ] Support videos
@@ -81,7 +82,3 @@ take a while depending on the number of photos you have. Then, it will display i
 To quit the app press `q` (repeatedly if needed).
 
 Note: If you don't see the slideshow in fullscreen, try specifying your screen resolution in the `display_width` and `display_height` fields in the config file.
-
-## Window Scripts
-
-There are a bunch of Task Scheduler tasks and scripts in the `window_scripts` folder, with the goal of turning on and off the photo frame and computer during sleep hours, and turn down the screen brightness at night. More information on the readme inside the folder.

@@ -1,5 +1,7 @@
 # Window Scripts
 
+# NOTE: I couldn't make the wake-up task work so leaving this untested for now.
+
 These a 4 tasks that can be imported into Window's Task Scheduler that do the following:
 
 - Wake up the computer at 8 57 am
