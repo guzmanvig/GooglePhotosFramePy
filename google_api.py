@@ -1,5 +1,7 @@
 import asyncio
 import os.path
+from time import sleep
+
 import numpy as np
 import requests
 from google.auth.exceptions import RefreshError
@@ -88,6 +90,22 @@ def get_all_media_items():
     print("All photos have been retrieved.")
 
 
+def download_photo(photo_name, photo_url, all_photo_urls, retries=0):
+    if retries > 3:
+        raise ConnectionError(f"Error while downloading photo {photo_url}")
+
+    response = requests.get(f"{photo_url}=d")
+    if response.status_code != 200:
+        print(f"Error {response.status_code} - {response.json()} while downloading photo {photo_url}, trying again...")
+        retries += 1
+        sleep(2)
+        download_photo(photo_name, photo_url, all_photo_urls, retries)
+    else:
+        with open(f"photos/{photo_name}.jpg", "wb") as f:
+            f.write(response.content)
+        all_photo_urls.remove(photo_url)
+
+
 async def download_random_photos(number_of_photos, photo_names):
     if len(photo_names) != number_of_photos:
         raise ValueError("The number of photo names should be equal to the number of photos")
@@ -99,19 +117,13 @@ async def download_random_photos(number_of_photos, photo_names):
     # Select random photos links
     random_photos_urls = np.random.choice(all_photo_urls, number_of_photos, replace=False)
 
-    # Remove them from the list
-    for photo_url in random_photos_urls:
-        all_photo_urls.remove(photo_url)
-
     # Create directory for photos if it doesn't exist
     if not os.path.exists('photos'):
         os.makedirs('photos')
 
     # Download the photos
     for i, photo_url in enumerate(random_photos_urls):
-        response = requests.get(f"{photo_url}=d")
-        with open(f"photos/{photo_names[i]}.jpg", "wb") as f:
-            f.write(response.content)
+        download_photo(photo_names[i], photo_url, all_photo_urls)
 
 
 if __name__ == "__main__":

@@ -233,12 +233,22 @@ def main_loop():
         current_img_path = image_folder + images[current_img_index]
         next_img_path = image_folder + images[next_img_index]
 
+        # Display the current image. If we are showing time, refresh every 60 seconds
+        if config['time_text']['show']:
+            number_of_refreshes = delay_between_photos // 60000  # Refresh every 60 seconds this many times
+            for i in range(number_of_refreshes):
+                cv2.imshow(window_name, get_fullscreen_image(current_img_path, window_name))
+                key = cv2.waitKey(60000)
+                if key == ord('q'):
+                    break
+        else:
+            cv2.imshow(window_name, get_fullscreen_image(current_img_path, window_name))
+            key = cv2.waitKey(delay_between_photos)
+            if key == ord('q'):
+                break
+
         fullscreen_current_img = get_fullscreen_image(current_img_path, window_name)
         fullscreen_next_img = get_fullscreen_image(next_img_path, window_name)
-
-        # Display the current image
-        cv2.imshow(window_name, fullscreen_current_img)
-        key = cv2.waitKey(delay_between_photos)
 
         # Crossfade to the next image
         for alpha in np.linspace(0, 1, transition_animation_duration // 10):
@@ -247,9 +257,6 @@ def main_loop():
             key = cv2.waitKey(10)
             if key == ord('q'):
                 break
-
-        if key == ord('q'):
-            break
 
         current_img_index = next_index(current_img_index, number_of_images)
 
