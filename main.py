@@ -147,8 +147,8 @@ async def async_download_photo(index):
 
 def is_now_in_time_range(time_range):
     now = datetime.datetime.now().time()
-    start_time = datetime.datetime.strptime(time_range['start'], '%I:%M %p').time()
-    end_time = datetime.datetime.strptime(time_range['end'], '%I:%M %p').time()
+    start_time = datetime.datetime.strptime(time_range['start'], '%H:%M').time()
+    end_time = datetime.datetime.strptime(time_range['end'], '%H:%M').time()
 
     if start_time < end_time:
         return start_time <= now <= end_time

@@ -13,12 +13,12 @@ config = {
         'display_width': 0,  # These 2 can be left as 0. Specify them only if you don't get fullscreen (happens in some devices).
         'display_height': 0,
         'pause': {
-            'start': '11:30 PM',  # If set, the slideshow will pause at this time and will show a black screen. In windows it also lowers the brightness to 0.
-            'end': '09:00 AM'
+            'start': '23:30',  # If set, the slideshow will pause at this time and will show a black screen. In windows it also lowers the brightness to 0.
+            'end': '09:00'
         },
         'low_brightness': {
-            'start': '08:15 PM',  # If set, the screen will dim at this time. Only for Windows
-            'end': '09:00 AM',
+            'start': '20:15',  # If set, the screen will dim at this time. Only for Windows
+            'end': '09:00',
             'brightness': 30  # From 0 to 100
         }
     },
