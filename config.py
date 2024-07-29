@@ -30,7 +30,7 @@ config = {
         'relative_position': 'BOTTOM_CENTER',  # Or TOP_CENTER
         'margin_top': 20,  # Only relevant if TOP_CENTER
         'margin_bottom': 20,  # Only relevant if BOTTOM_CENTER
-        'start_position_X': 20,  # If these 2 are set, the previous ones are ignored
+        'start_position_X': 20,  # These 2 are only used if relative_position is empty
         'start_position_Y': 100,
         'format': '%H:%M',
         'font_scale': 2,
@@ -41,7 +41,7 @@ config = {
         'show': True,
         'relative_position': 'CENTER_ABOVE_TIME',  # Or CENTER_BELOW_TIME
         'spacing_from_time': 15,
-        'start_position_X': 20,  # If these 2 are set, the previous ones are ignored
+        'start_position_X': 20,  # These 2 are only used if relative_position is empty
         'start_position_Y': 100,
         'format': '%d de %B',
         'font_scale': 0.5,
