@@ -46,7 +46,6 @@ def get_fullscreen_image(image_path, window_name):
         padding = (screen_height - new_height) // 2
         scaled_img = cv2.resize(img, (screen_width, new_height))
         result_img = cv2.copyMakeBorder(scaled_img, padding, padding, 0, 0, cv2.BORDER_CONSTANT, value=(0, 0, 0))
-        screen_height = new_height
 
     if config['time_text']['show']:
 
