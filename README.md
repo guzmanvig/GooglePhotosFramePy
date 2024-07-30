@@ -19,7 +19,7 @@ I'm down to do them if someone requests them.
 
 - [x] Create a Batch script for Windows to start the program (or Bash for Linux).
 - [x] Support other operating systems (macOS, Linux)
-- [ ] Better error handling, especially for when losing connection
+- [x] Better error handling, especially for when losing connection
 - [x] Windows scheduler to start the app when the computer starts and turn off at night
 - [x] Added configurable pause and brightness dim
 - [ ] Add album selection support

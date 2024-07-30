@@ -1,5 +1,6 @@
 import asyncio
 import os.path
+import traceback
 from time import sleep
 
 import numpy as np
@@ -94,16 +95,22 @@ def download_photo(photo_name, photo_url, all_photo_urls, retries=0):
     if retries > 3:
         raise ConnectionError(f"Error while downloading photo {photo_url}")
 
-    response = requests.get(f"{photo_url}=d")
-    if response.status_code != 200:
-        print(f"Error {response.status_code} - {response.json()} while downloading photo {photo_url}, trying again...")
+    try:
+        response = requests.get(f"{photo_url}=d")
+        if response.status_code != 200:
+            print(f"Error {response.status_code} - {response.reason} while downloading photo {photo_url}, trying again...")
+            retries += 1
+            sleep(2)
+            download_photo(photo_name, photo_url, all_photo_urls, retries)
+        else:
+            with open(f"photos/{photo_name}.jpg", "wb") as f:
+                f.write(response.content)
+            all_photo_urls.remove(photo_url)
+    except ConnectionError:
+        traceback.print_exc()
         retries += 1
         sleep(2)
         download_photo(photo_name, photo_url, all_photo_urls, retries)
-    else:
-        with open(f"photos/{photo_name}.jpg", "wb") as f:
-            f.write(response.content)
-        all_photo_urls.remove(photo_url)
 
 
 async def download_random_photos(number_of_photos, photo_names):

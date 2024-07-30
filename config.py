@@ -19,7 +19,7 @@ config = {
         'low_brightness': {
             'start': '20:15',  # If set, the screen will dim at this time. Only for Windows
             'end': '09:00',
-            'brightness': 20  # From 0 to 100
+            'brightness': 30  # From 0 to 100
         }
     },
     'general': {
