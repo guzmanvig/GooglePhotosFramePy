@@ -10,7 +10,7 @@ Tested in: Windows 10, Ubuntu 20, MacOS 14.5
 
 I have an old Windows tablet that is pretty much useless. I couldn't find any free, open-source, software that would turn it into a digital photo frame that would display my Google Photos. So I decided to create my own.
 
-insert gif here
+![demo](https://github.com/guzmanvig/GooglePhotosFramePy/blob/main/demo.gif)
 
 ## Potential new features
 
