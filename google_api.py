@@ -90,7 +90,7 @@ def get_all_media_items():
     print("All photos have been retrieved.")
 
 
-@retry(wait=wait_random_exponential(min=3, max=5), stop=stop_after_attempt(3))
+@retry(wait=wait_random_exponential(min=3, max=20), stop=stop_after_attempt(3))
 def download_photo(photo_name, photo_id, all_photo_ids):
     response = requests.get(f"https://photoslibrary.googleapis.com/v1/mediaItems/{photo_id}",
                             headers={
