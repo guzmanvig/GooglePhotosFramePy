@@ -2,7 +2,7 @@
 
 This is a Google Photos Frame in Python. It uses the Google Photos API to get the photos and display them randomly in fullscreen.
 
-Has a bunch of configuration options such as displaying time and date, pausing, dim brightness, etc.Check `config.py` for the full configuration options.
+Has a bunch of configuration options such as displaying time and date, pausing, dim brightness, etc. Check `config.py` for the full configuration options.
 
 Tested in: Windows 10, Ubuntu 20, MacOS 14.5
 
@@ -59,7 +59,7 @@ Because this app is not officially published in Google yet, you need to create y
 
 ### Running the app
 
-Once the previous step is done, run `bash run.sh` if you are in Linux or `.\run.bat` if you are in Linux. This should start the program.
+Once the previous step is done, run `bash run.sh` if you are in Linux/MacOS or `.\run.bat` if you are in Windows. This should start the program.
 The first time the scripts run, the requirements are installed so it may take some time.
 
 You can also manually create a virtual environment and install the requirements (which is exactly what the scripts do):

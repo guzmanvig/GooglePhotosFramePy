@@ -1,7 +1,5 @@
 import asyncio
 import os.path
-import traceback
-from time import sleep
 from tenacity import retry, wait_random_exponential, stop_after_attempt
 import numpy as np
 import requests
@@ -68,7 +66,8 @@ def google_api_search(page_token):
             },
             "pageSize": 100,
             "pageToken": page_token
-        }
+        },
+        timeout=30
     )
 
     response_json = response.json()
@@ -96,7 +95,7 @@ def download_photo(photo_name, photo_id, all_photo_ids):
     response = requests.get(f"https://photoslibrary.googleapis.com/v1/mediaItems/{photo_id}",
                             headers={
                                     "Authorization": f"Bearer {get_token()}"
-                                })
+                                }, timeout=30)
 
     if response.status_code != 200:
         print(f"Error {response.status_code} - {response.reason} getting photo {photo_id}, trying again...")
@@ -104,7 +103,7 @@ def download_photo(photo_name, photo_id, all_photo_ids):
 
     data = response.json()
     base_url = data["baseUrl"]
-    response = requests.get(f"{base_url}=d")
+    response = requests.get(f"{base_url}=d", timeout=30)
 
     if response.status_code != 200:
         print(f"Error {response.status_code} - {response.reason} downloading photo {photo_id}, trying again...")
