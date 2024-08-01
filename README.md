@@ -23,6 +23,7 @@ I'm down to do them if someone requests them.
 - [x] Windows scheduler to start the app when the computer starts and turn off at night
 - [x] Added configurable pause and brightness dim
 - [ ] Add album selection support
+- [ ] Add whether information
 - [ ] Persist photo ids in a file to avoid getting them every time (could take time if there are too many)
 - [ ] Display metadata of photos (like the photo date)
 - [ ] Support videos
