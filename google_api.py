@@ -1,5 +1,7 @@
 import asyncio
 import os.path
+
+import cv2
 from tenacity import retry, wait_random_exponential, stop_after_attempt
 import numpy as np
 import requests
@@ -91,7 +93,7 @@ def get_all_media_items():
 
 
 @retry(wait=wait_random_exponential(min=3, max=20), stop=stop_after_attempt(3))
-def download_photo(photo_name, photo_id, all_photo_ids):
+def download_photo(photo_name, photo_id):
     response = requests.get(f"https://photoslibrary.googleapis.com/v1/mediaItems/{photo_id}",
                             headers={
                                     "Authorization": f"Bearer {get_token()}"
@@ -109,9 +111,15 @@ def download_photo(photo_name, photo_id, all_photo_ids):
         print(f"Error {response.status_code} - {response.reason} downloading photo {photo_id}, trying again...")
         raise ConnectionError(f"Error while getting photo {photo_id}")
 
+    # Store the image
     with open(f"photos/{photo_name}.jpg", "wb") as f:
         f.write(response.content)
-    all_photo_ids.remove(photo_id)
+
+    # Test that the image was downloaded correctly
+    img = cv2.imread(f"photos/{photo_name}.jpg")
+    if img is None:
+        print(f"Error while reading photo {photo_id}, trying again...")
+        raise ConnectionError(f"Error while reading photo {photo_id}")
 
 
 async def download_random_photos(number_of_photos, photo_names):
@@ -119,8 +127,7 @@ async def download_random_photos(number_of_photos, photo_names):
         raise ValueError("The number of photo names should be equal to the number of photos")
 
     if len(all_photo_ids) < number_of_photos:
-        all_photo_ids.clear()
-        get_all_media_items()
+        raise ValueError("There are not enough photos to select from.")
 
     # Select random photos links
     random_photos_ids = np.random.choice(all_photo_ids, number_of_photos, replace=False)
