@@ -126,6 +126,9 @@ async def download_random_photos(number_of_photos, photo_names):
     if len(photo_names) != number_of_photos:
         raise ValueError("The number of photo names should be equal to the number of photos")
 
+    if len(all_photo_ids) == 0:
+        get_all_media_items()
+
     if len(all_photo_ids) < number_of_photos:
         raise ValueError("There are not enough photos to select from.")
 
