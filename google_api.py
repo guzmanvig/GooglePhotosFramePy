@@ -141,7 +141,7 @@ async def download_random_photos(number_of_photos, photo_names):
 
     # Download the photos
     for i, photo_id in enumerate(random_photos_ids):
-        download_photo(photo_names[i], photo_id, all_photo_ids)
+        download_photo(photo_names[i], photo_id)
 
 
 if __name__ == "__main__":
