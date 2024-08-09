@@ -115,12 +115,6 @@ def download_photo(photo_name, photo_id):
     with open(f"photos/{photo_name}.jpg", "wb") as f:
         f.write(response.content)
 
-    # Test that the image was downloaded correctly
-    img = cv2.imread(f"photos/{photo_name}.jpg")
-    if img is None:
-        print(f"Error while reading photo {photo_id}, trying again...")
-        raise ConnectionError(f"Error while reading photo {photo_id}")
-
 
 async def download_random_photos(number_of_photos, photo_names):
     if len(photo_names) != number_of_photos:
@@ -141,7 +135,19 @@ async def download_random_photos(number_of_photos, photo_names):
 
     # Download the photos
     for i, photo_id in enumerate(random_photos_ids):
+        tries = 0
         download_photo(photo_names[i], photo_id)
+
+        # Test that the image was downloaded correctly. Try 3 times.
+        img = cv2.imread(f"photos/{photo_names[i]}.jpg")
+        while img is None and tries < 3:
+            new_photo_id = np.random.choice(all_photo_ids, 1, replace=False)
+            print(f"Invalid photo {photo_id}. Trying with photo {new_photo_id}...")
+            download_photo(photo_names[i], new_photo_id)
+            img = cv2.imread(f"photos/{photo_names[i]}.jpg")
+            tries += 1
+        if img is None:
+            raise ConnectionError(f"Error downloading photos. Couldn't find a suitable photo.")
 
 
 if __name__ == "__main__":

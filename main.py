@@ -267,4 +267,4 @@ if __name__ == '__main__':
         main_loop()
     except Exception as e:
         traceback.print_exc()
-        input("Something went wrong while running photo frame, press any key to exit")
+        print("Something went wrong while running photo frame. Exiting...")
