@@ -2,10 +2,12 @@ config = {
     'photo_selection': {
         'ranges': [
             {
-                'startDate': {'year': 2024, 'month': 3, 'day': 28},
+                'startDate': {'year': 2024, 'month': 5, 'day': 28},
                 'endDate': {'year': 2024, 'month': 6, 'day': 21}
             },
-        ]
+        ],
+        'albums': ['Barcelona', 'Washington DC', 'Graduation', 'NYC 2021'],
+        'shared_albums': ['ALL']  # ALL is a wildcard for all albums
     },
     'slideshow': {
         'delay_between_photos': 300000,  # In milliseconds
@@ -23,7 +25,8 @@ config = {
         }
     },
     'general': {
-        'locale': 'es_ES.UTF-8'  # For English use en_US.UTF-8
+        'locale': 'es_ES.UTF-8',  # For English use en_US.UTF-8
+        'refresh_photos': False,  # If True, the script will fetch new photos from Google Photos instead of using the onces in file
     },
     'time_text': {
         'show': True,

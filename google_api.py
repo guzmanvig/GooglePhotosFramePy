@@ -13,8 +13,6 @@ from config import config
 
 SCOPES = ['https://www.googleapis.com/auth/photoslibrary.readonly']
 
-all_photo_ids = []
-
 
 def get_token():
     if not os.path.exists("client_secret.json"):
@@ -49,47 +47,125 @@ def get_token():
     return creds.token
 
 
-def google_api_search(page_token):
-    date_ranges = config['photo_selection']['ranges']
+def google_api_media_search(page_token, date_ranges, album_id):
+    payload = {
+            "pageSize": 100,
+            "pageToken": page_token
+    }
+    if album_id:
+        payload["albumId"] = album_id
+    else:
+        payload["filters"] = {
+                "dateFilter": {
+                    "ranges": date_ranges
+                }
+        }
 
     response = requests.post(
         "https://photoslibrary.googleapis.com/v1/mediaItems:search",
         headers={
             "Authorization": f"Bearer {get_token()}"
         },
-        json={
-            "filters": {
-                "dateFilter": {
-                    "ranges": date_ranges
-                },
-                "mediaTypeFilter": {
-                    "mediaTypes": ["PHOTO"]
-                }
-            },
-            "pageSize": 100,
+        json=payload,
+        timeout=30
+    )
+
+    response_json = response.json()
+    media_items = response_json.get("mediaItems", None)
+    if not media_items:
+        return [], None
+
+    next_page_token = response_json.get("nextPageToken")
+    photo_ids = [photo["id"] for photo in media_items if photo["mimeType"].startswith("image/")]
+    return photo_ids, next_page_token
+
+
+def google_api_album_search(page_token, shared_albums, album_names):
+    if shared_albums:
+        url = "https://photoslibrary.googleapis.com/v1/sharedAlbums"
+    else:
+        url = "https://photoslibrary.googleapis.com/v1/albums"
+
+    response = requests.get(
+        url,
+        params={
+            "pageSize": 50,
             "pageToken": page_token
+        },
+        headers={
+            "Authorization": f"Bearer {get_token()}"
         },
         timeout=30
     )
 
     response_json = response.json()
-    media_items = response_json["mediaItems"]
+    albums = response_json["albums"] if not shared_albums else response_json["sharedAlbums"]
     next_page_token = response_json.get("nextPageToken")
 
-    photo_ids = [photo["id"] for photo in media_items]
-    return photo_ids, next_page_token
+    if len(album_names) == 1 and album_names[0] == "ALL":
+        album_ids = [album["id"] for album in albums]
+    else:
+        album_ids = [album["id"] for album in albums if album.get("title", None) in album_names]
+    return album_ids, next_page_token
 
 
 def get_all_media_items():
-    photo_ids, next_page_token = google_api_search("")
-    all_photo_ids.extend(photo_ids)
-    page = 1
-    while next_page_token:
-        print(f"Getting Google Photos page {page}...")
-        photo_ids, next_page_token = google_api_search(next_page_token)
-        all_photo_ids.extend(photo_ids)
-        page += 1
-    print("All photos have been retrieved.")
+    all_album_ids = set()
+
+    # Get all the album ids
+    albums = config['photo_selection'].get('albums', None)
+    if albums and len(albums) != 0:
+        album_ids, next_page_token = google_api_album_search(page_token="", shared_albums=False, album_names=albums)
+        all_album_ids.update(album_ids)
+        page = 1
+        while next_page_token:
+            print(f"Getting Google Photos albums page {page}...")
+            album_ids, next_page_token = google_api_album_search(page_token=next_page_token, shared_albums=False, album_names=albums)
+            all_album_ids.update(album_ids)
+            page += 1
+
+    # Get all the shared album ids
+    shared_albums = config['photo_selection'].get('shared_albums', None)
+    if shared_albums and len(shared_albums) != 0:
+        album_ids, next_page_token = google_api_album_search(page_token="", shared_albums=True, album_names=shared_albums)
+        all_album_ids.update(album_ids)
+        page = 1
+        while next_page_token:
+            print(f"Getting Google Photos shared albums page {page}...")
+            album_ids, next_page_token = google_api_album_search(page_token=next_page_token, shared_albums=True, album_names=shared_albums)
+            all_album_ids.update(album_ids)
+            page += 1
+
+    all_photo_ids = set()
+
+    # Get all the media items from the albums
+    if len(all_album_ids) != 0:
+        for album_id in all_album_ids:
+            photo_ids, next_page_token = google_api_media_search(page_token="", date_ranges=[], album_id=album_id)
+            all_photo_ids.update(photo_ids)
+            page = 1
+            while next_page_token:
+                print(f"Getting Google Photos from album page {page}...")
+                photo_ids, next_page_token = google_api_media_search(page_token=next_page_token, date_ranges=[], album_id=album_id)
+                all_photo_ids.update(photo_ids)
+                page += 1
+
+    # Get all the media items from the date ranges
+    date_ranges = config['photo_selection']['ranges']
+    if date_ranges and date_ranges != []:
+        photo_ids, next_page_token = google_api_media_search(page_token="", date_ranges=date_ranges, album_id=None)
+        all_photo_ids.update(photo_ids)
+        page = 1
+        while next_page_token:
+            print(f"Getting Google Photos from date ranges page {page}...")
+            photo_ids, next_page_token = google_api_media_search(page_token=next_page_token, date_ranges=date_ranges, album_id=None)
+            all_photo_ids.update(photo_ids)
+            page += 1
+
+    with open("all_photo_ids.txt", "w") as f:
+        for photo_id in all_photo_ids:
+            f.write(f"{photo_id}\n")
+    print("All photo ids have been retrieved and stored.")
 
 
 @retry(wait=wait_random_exponential(min=3, max=20), stop=stop_after_attempt(3))
@@ -116,12 +192,15 @@ def download_photo(photo_name, photo_id):
         f.write(response.content)
 
 
-async def download_random_photos(number_of_photos, photo_names):
+async def download_random_photos(number_of_photos, photo_names, refresh_photos=False):
     if len(photo_names) != number_of_photos:
         raise ValueError("The number of photo names should be equal to the number of photos")
 
-    if len(all_photo_ids) == 0:
+    if not os.path.exists("all_photo_ids.txt") or refresh_photos:
         get_all_media_items()
+
+    with open("all_photo_ids.txt", "r") as f:
+        all_photo_ids = f.read().splitlines()
 
     if len(all_photo_ids) < number_of_photos:
         raise ValueError("There are not enough photos to select from.")

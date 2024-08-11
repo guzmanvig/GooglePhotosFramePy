@@ -139,7 +139,8 @@ async def async_download_photo(index):
     asyncio.create_task(
         download_random_photos(
             number_of_photos=1,
-            photo_names=[str(index)]
+            photo_names=[str(index)],
+            refresh_photos=False
         )
     )
 
@@ -183,7 +184,7 @@ def main_loop():
     os_is_windows = platform_is_windows()
 
     # Wait for the initial download to finish
-    asyncio.run(download_random_photos(number_of_photos=5, photo_names=["0", "1", "2", "3", "4"]))
+    asyncio.run(download_random_photos(number_of_photos=5, photo_names=["0", "1", "2", "3", "4"], refresh_photos=config['general']['refresh_photos']))
 
     delay_between_photos = config['slideshow']['delay_between_photos']
     transition_animation_duration = config['slideshow']['transition_animation_duration']

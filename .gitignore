@@ -2,6 +2,7 @@
 /photos/*
 client_secret.json
 token.json
+all_photo_ids.txt
 
 .idea/
 .DS_Store
