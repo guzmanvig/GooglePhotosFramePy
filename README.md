@@ -23,14 +23,14 @@ I'm down to do them if someone requests them.
 - [x] Windows scheduler to start the app when the computer starts and turn off at night
 - [x] Added configurable pause and brightness dim
 - [x] Add album selection support
-- [ ] Add whether information
+- [x] Support other ways to display the photos (zoomed, cropped, etc) - Zoomed in or with black margins added
 - [x] Persist photo ids in a file to avoid getting them every time (could take time if there are too many)
+- [ ] Add whether information
 - [ ] Display metadata of photos (like the photo date)
 - [ ] Support videos
 - [ ] Support multiple accounts
 - [ ] Support other cloud services (Dropbox, OneDrive, etc) and local photos
 - [ ] Support other transition animations
-- [ ] Support other ways to display the photos (zoomed, cropped, etc)
 - [ ] Support other strategies to display the photos (instead of random, like ordered by date for example)
 
 If  you need one of these features (or other), feel free to open an issue or a pull request, or contact me at

@@ -24,28 +24,45 @@ def get_fullscreen_image(image_path, window_name):
         screen_width = config['slideshow']['display_width']
         screen_height = config['slideshow']['display_height']
     else:
-        # Get if from the fullscreen window
+        # Get it from the fullscreen window
         screen_width, screen_height = cv2.getWindowImageRect(window_name)[2:4]
 
     # Calculate aspect ratios
     img_aspect_ratio = img_width / img_height
     screen_aspect_ratio = screen_width / screen_height
 
-    # Calculate scaling factors and padding
-    if screen_aspect_ratio > img_aspect_ratio:
-        # Screen is wider than image, scale based on height
-        scale = screen_height / img_height
-        new_width = int(img_width * scale)
-        padding = (screen_width - new_width) // 2
-        scaled_img = cv2.resize(img, (new_width, screen_height))
-        result_img = cv2.copyMakeBorder(scaled_img, 0, 0, padding, padding, cv2.BORDER_CONSTANT, value=(0, 0, 0))
+    if config['general']['zoom_to_fit']:
+        # Calculate scaling factors for zooming
+        if screen_aspect_ratio > img_aspect_ratio:
+            # Screen is wider than image, scale based on width (zoom in on height)
+            scale = screen_width / img_width
+            new_height = int(screen_height / scale)
+            crop_y = (img_height - new_height) // 2
+            cropped_img = img[crop_y:crop_y + new_height, :]
+            result_img = cv2.resize(cropped_img, (screen_width, screen_height))
+        else:
+            # Screen is taller than image, scale based on height (zoom in on width)
+            scale = screen_height / img_height
+            new_width = int(screen_width / scale)
+            crop_x = (img_width - new_width) // 2
+            cropped_img = img[:, crop_x:crop_x + new_width]
+            result_img = cv2.resize(cropped_img, (screen_width, screen_height))
     else:
-        # Screen is taller than image, scale based on width
-        scale = screen_width / img_width
-        new_height = int(img_height * scale)
-        padding = (screen_height - new_height) // 2
-        scaled_img = cv2.resize(img, (screen_width, new_height))
-        result_img = cv2.copyMakeBorder(scaled_img, padding, padding, 0, 0, cv2.BORDER_CONSTANT, value=(0, 0, 0))
+        # Calculate scaling factors and padding
+        if screen_aspect_ratio > img_aspect_ratio:
+            # Screen is wider than image, scale based on height
+            scale = screen_height / img_height
+            new_width = int(img_width * scale)
+            padding = (screen_width - new_width) // 2
+            scaled_img = cv2.resize(img, (new_width, screen_height))
+            result_img = cv2.copyMakeBorder(scaled_img, 0, 0, padding, padding, cv2.BORDER_CONSTANT, value=(0, 0, 0))
+        else:
+            # Screen is taller than image, scale based on width
+            scale = screen_width / img_width
+            new_height = int(img_height * scale)
+            padding = (screen_height - new_height) // 2
+            scaled_img = cv2.resize(img, (screen_width, new_height))
+            result_img = cv2.copyMakeBorder(scaled_img, padding, padding, 0, 0, cv2.BORDER_CONSTANT, value=(0, 0, 0))
 
     if config['time_text']['show']:
 

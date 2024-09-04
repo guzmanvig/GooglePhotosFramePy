@@ -27,6 +27,7 @@ config = {
     'general': {
         'locale': 'es_ES.UTF-8',  # For English use en_US.UTF-8
         'refresh_photos': False,  # If True, the script will fetch new photos from Google Photos instead of using the onces in file
+        'zoom_to_fit': False  # If True, the images will be zoomed and then cropped to fit the screen dimensions. If False, black margins are added to the image to fit the dimensions.
     },
     'time_text': {
         'show': True,
