@@ -2,7 +2,7 @@ config = {
     'photo_selection': {
         'ranges': [
             {
-                'startDate': {'year': 2024, 'month': 5, 'day': 28},
+                'startDate': {'year': 2024, 'month': 3, 'day': 28},
                 'endDate': {'year': 2024, 'month': 6, 'day': 21}
             },
         ],
@@ -10,7 +10,7 @@ config = {
         'shared_albums': ['ALL']  # ALL is a wildcard for all albums
     },
     'slideshow': {
-        'delay_between_photos': 300000,  # In milliseconds
+        'delay_between_photos': 600000,  # In milliseconds
         'transition_animation_duration': 500,  # In milliseconds
         'display_width': 0,  # These 2 can be left as 0. Specify them only if you don't get fullscreen (happens in some devices).
         'display_height': 0,
