@@ -196,6 +196,14 @@ def show_black_photo(window_name):
     cv2.waitKey(10)
 
 
+def handle_mouse_click(event, x, y, flags, param):
+    if event == cv2.EVENT_LBUTTONDOWN:
+        # Check if click is within the rectangle area (top left corner)
+        if (x <= config['click_area']['width'] and 
+            y <= config['click_area']['height']):
+            param['skip_to_next'] = True
+
+
 def main_loop():
     # Check the platform. Used to determine if we can adjust the screen brightness
     os_is_windows = platform_is_windows()
@@ -214,7 +222,12 @@ def main_loop():
     window_name = "image"
 
     cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
-    cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+    if config['slideshow']['display_width'] == 0 or config['slideshow']['display_height'] == 0:
+        cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
+    # Add mouse callback
+    click_params = {'window_name': window_name, 'skip_to_next': False}
+    cv2.setMouseCallback(window_name, handle_mouse_click, click_params)
 
     current_brightness = 100
     current_img_index = 0
@@ -251,19 +264,24 @@ def main_loop():
         current_img_path = image_folder + images[current_img_index]
         next_img_path = image_folder + images[next_img_index]
 
-        # Display the current image. If we are showing time, refresh every 60 seconds
+        # Display the current image. If we are showing time, refresh every 2 seconds
         if config['time_text']['show']:
-            number_of_refreshes = delay_between_photos // 60000  # Refresh every 60 seconds this many times
+            number_of_refreshes = delay_between_photos // 2000  # Refresh every 2 seconds this many times
             for i in range(number_of_refreshes):
                 cv2.imshow(window_name, get_fullscreen_image(current_img_path, window_name))
-                key = cv2.waitKey(60000)
+                key = cv2.waitKey(2000)
                 if key == ord('q'):
+                    break
+                if click_params['skip_to_next']:
+                    click_params['skip_to_next'] = False
                     break
         else:
             cv2.imshow(window_name, get_fullscreen_image(current_img_path, window_name))
             key = cv2.waitKey(delay_between_photos)
             if key == ord('q'):
                 break
+            if click_params['skip_to_next']:
+                click_params['skip_to_next'] = False
 
         fullscreen_current_img = get_fullscreen_image(current_img_path, window_name)
         fullscreen_next_img = get_fullscreen_image(next_img_path, window_name)
