@@ -29,9 +29,13 @@ config = {
         'refresh_photos': False,  # If True, the script will fetch new photos from Google Photos instead of using the onces in file
         'zoom_to_fit': True  # If True, the images will be zoomed and then cropped to fit the screen dimensions. If False, black margins are added to the image to fit the dimensions.
     },
-    'click_area': {
-        'width': 200,  # Invisible area in the top right corner to skip to next photo
-        'height': 50   
+    'next_click_area': {
+        'width': 200,  # Invisible area in the top left corner to skip to next photo
+        'height': 200   
+    },
+     'off_click_area': {
+        'width': 200,  # Invisible area in the bottom left corner to skip to next photo
+        'height': 200   
     },
     'time_text': {
         'show': True,

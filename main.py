@@ -173,11 +173,6 @@ def is_now_in_time_range(time_range):
         return now >= start_time or now <= end_time
 
 
-def wait_til_pause_is_over():
-    while is_now_in_time_range(config['slideshow']['pause']):
-        time.sleep(60)
-
-
 def platform_is_windows():
     return platform.system() == 'Windows'
 
@@ -198,10 +193,17 @@ def show_black_photo(window_name):
 
 def handle_mouse_click(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
-        # Check if click is within the rectangle area (top left corner)
-        if (x <= config['click_area']['width'] and 
-            y <= config['click_area']['height']):
+        window_height = cv2.getWindowImageRect(param['window_name'])[3]
+        
+        # Check if click is within the next photo area (top left corner)
+        if (x <= config['next_click_area']['width'] and 
+            y <= config['next_click_area']['height']):
             param['skip_to_next'] = True
+            
+        # Check if click is within the off area (bottom left corner)
+        if (x <= config['off_click_area']['width'] and 
+            y >= window_height - config['off_click_area']['height']):
+            param['toggle_black_screen'] = True
 
 
 def main_loop():
@@ -225,23 +227,48 @@ def main_loop():
     if config['slideshow']['display_width'] == 0 or config['slideshow']['display_height'] == 0:
         cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
-    # Add mouse callback
-    click_params = {'window_name': window_name, 'skip_to_next': False}
+    click_params = {
+        'window_name': window_name, 
+        'skip_to_next': False,
+        'toggle_black_screen': False
+    }
     cv2.setMouseCallback(window_name, handle_mouse_click, click_params)
 
     current_brightness = 100
     current_img_index = 0
+    black_screen_on = False
+    pause_started = False
+    pause_ended = False
+    
     while True:
-
-        # Check if we are paused
+        
+        # Trigger the black screen on on pause start, and off on pause end
         if config['slideshow']['pause']['start'] and config['slideshow']['pause']['end']:
             if is_now_in_time_range(config['slideshow']['pause']):
-                show_black_photo(window_name)
-                set_brightness(0)
-                wait_til_pause_is_over()
-                set_brightness(100)
+                if not pause_started:
+                    black_screen_on = True
+                    pause_started = True
+                    pause_ended = False
+            else:
+                if pause_started and not pause_ended:
+                    black_screen_on = False
+                    pause_started = False
+                    pause_ended = True
 
-        # Check if we need to adjust the brightness (only for Windows)
+        if black_screen_on:
+            # If the user toggles the black screen, we need to continue the loop to show the next image
+            if click_params['toggle_black_screen']:
+                black_screen_on = not black_screen_on
+                click_params['toggle_black_screen'] = False
+            else:
+            # Else show the black screen and lower the brightness
+                show_black_photo(window_name)
+                if current_brightness != 0:
+                    set_brightness(0)
+                    current_brightness = 0
+            continue
+
+        # Check if we need to adjust the brightness according the time of day (only for Windows)
         if os_is_windows and config['slideshow']['low_brightness']['start'] and config['slideshow']['low_brightness']['end']:
             low_brightness = config['slideshow']['low_brightness']['brightness']
             if is_now_in_time_range(config['slideshow']['low_brightness']):
@@ -275,13 +302,22 @@ def main_loop():
                 if click_params['skip_to_next']:
                     click_params['skip_to_next'] = False
                     break
+                if click_params['toggle_black_screen']:
+                    black_screen_on = not black_screen_on
+                    click_params['toggle_black_screen'] = False
+                    break
+        
         else:
             cv2.imshow(window_name, get_fullscreen_image(current_img_path, window_name))
             key = cv2.waitKey(delay_between_photos)
             if key == ord('q'):
                 break
+            # TODO: This will not work since we are in the waitKey loop. Same thing for the manual black screen
             if click_params['skip_to_next']:
                 click_params['skip_to_next'] = False
+
+        if black_screen_on:
+            continue
 
         fullscreen_current_img = get_fullscreen_image(current_img_path, window_name)
         fullscreen_next_img = get_fullscreen_image(next_img_path, window_name)
