@@ -315,17 +315,24 @@ def main_loop():
                 key = cv2.waitKey(2000)
                 if key == ord('q'):
                     break
+                # Skip to next photo via manual click
                 if click_params['skip_to_next']:
                     click_params['skip_to_next'] = False
                     break
+                # Skip to next photo via HTTP request
+                if server_state['skip_to_next_requested']:
+                    server_state['skip_to_next_requested'] = False
+                    break
+                # Toggle black screen via manual click
                 if click_params['toggle_black_screen']:
                     black_screen_on = not black_screen_on
                     click_params['toggle_black_screen'] = False
                     break
-                if server_state['skip_to_next_requested']:
+                # Toggle black screen via HTTP request
+                if click_params['toggle_black_screen_requested']:
                     black_screen_on = not black_screen_on
-                    server_state['skip_to_next_requested'] = False
-                    break  # This will exit the current iteration and move to the next photo
+                    click_params['toggle_black_screen_requested'] = False
+                    break 
         
         else:
             cv2.imshow(window_name, get_fullscreen_image(current_img_path, window_name))
