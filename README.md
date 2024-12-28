@@ -1,5 +1,7 @@
 # GooglePhotosFramePy: A Configurable Google Photos Frame in Python
 
+IMPORTANT NOTE: The features are fully tested in Windows 10. For other OSs, some tweaks might be needed.
+
 This is a Google Photos Frame in Python. It uses the Google Photos API to get the photos and display them randomly in fullscreen.
 
 Has a bunch of configuration options such as displaying time and date, pausing, dim brightness, etc. Check `config.py` for the full configuration options.
