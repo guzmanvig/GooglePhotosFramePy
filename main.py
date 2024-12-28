@@ -290,7 +290,7 @@ def main_loop():
                     set_brightness(low_brightness)
                     current_brightness = low_brightness
             else:
-                if current_brightness == low_brightness:
+                if current_brightness != 100:
                     set_brightness(100)
                     current_brightness = 100
 
@@ -323,6 +323,7 @@ def main_loop():
                     click_params['toggle_black_screen'] = False
                     break
                 if server_state['skip_to_next_requested']:
+                    black_screen_on = not black_screen_on
                     server_state['skip_to_next_requested'] = False
                     break  # This will exit the current iteration and move to the next photo
         
