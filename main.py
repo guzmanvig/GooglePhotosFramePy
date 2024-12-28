@@ -11,6 +11,7 @@ import cv2
 import numpy as np
 from google_api import download_random_photos
 from config import config
+from server import start_server
 
 locale.setlocale(locale.LC_TIME, config['general']['locale'])
 
@@ -152,12 +153,13 @@ def next_index(index, length):
     return next_idx
 
 
-async def async_download_photo(index):
+async def async_download_photo(index, server_state):
     asyncio.create_task(
         download_random_photos(
             number_of_photos=1,
             photo_names=[str(index)],
-            refresh_photos=False
+            refresh_photos=False,
+            server_state=server_state
         )
     )
 
@@ -210,8 +212,15 @@ def main_loop():
     # Check the platform. Used to determine if we can adjust the screen brightness
     os_is_windows = platform_is_windows()
 
+    server_state = start_server()
+    
     # Wait for the initial download to finish
-    asyncio.run(download_random_photos(number_of_photos=5, photo_names=["0", "1", "2", "3", "4"], refresh_photos=config['general']['refresh_photos']))
+    asyncio.run(download_random_photos(
+        number_of_photos=5, 
+        photo_names=["0", "1", "2", "3", "4"], 
+        refresh_photos=config['general']['refresh_photos'],
+        server_state=server_state
+    ))
 
     delay_between_photos = config['slideshow']['delay_between_photos']
     transition_animation_duration = config['slideshow']['transition_animation_duration']
@@ -227,6 +236,7 @@ def main_loop():
     if config['slideshow']['display_width'] == 0 or config['slideshow']['display_height'] == 0:
         cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
+    
     click_params = {
         'window_name': window_name, 
         'skip_to_next': False,
@@ -241,8 +251,12 @@ def main_loop():
     pause_ended = False
     
     while True:
+        # Check for HTTP toggle requests
+        if server_state['toggle_black_screen_requested']:
+            black_screen_on = not black_screen_on
+            server_state['toggle_black_screen_requested'] = False
         
-        # Trigger the black screen on on pause start, and off on pause end
+        # Trigger the black screen on pause start, and off on pause end
         if config['slideshow']['pause']['start'] and config['slideshow']['pause']['end']:
             if is_now_in_time_range(config['slideshow']['pause']):
                 if not pause_started:
@@ -281,15 +295,17 @@ def main_loop():
                     current_brightness = 100
 
         # Image logic
-
         next_img_index = next_index(current_img_index, number_of_images)
 
         # Download image of the following iteration async so it's ready
         next_iteration_current_index = next_index(next_img_index, number_of_images)
-        asyncio.run(async_download_photo(next_iteration_current_index))
+        asyncio.run(async_download_photo(next_iteration_current_index, server_state))
 
         current_img_path = image_folder + images[current_img_index]
         next_img_path = image_folder + images[next_img_index]
+        
+        # Update current photo in server state
+        server_state['current_photo'] = images[current_img_index]
 
         # Display the current image. If we are showing time, refresh every 2 seconds
         if config['time_text']['show']:
@@ -306,6 +322,9 @@ def main_loop():
                     black_screen_on = not black_screen_on
                     click_params['toggle_black_screen'] = False
                     break
+                if server_state['skip_to_next_requested']:
+                    server_state['skip_to_next_requested'] = False
+                    break  # This will exit the current iteration and move to the next photo
         
         else:
             cv2.imshow(window_name, get_fullscreen_image(current_img_path, window_name))

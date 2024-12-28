@@ -14,6 +14,13 @@ fi
 # Activate the virtual environment
 source venv/bin/activate
 
+# Start the React app in the background
+if [ ! -d "slideshow-control/node_modules" ]; then
+    (cd slideshow-control && npm install && npm start) &
+else
+    (cd slideshow-control && npm start) &
+fi
+
 # Run the main.py script
 python3.12 main.py
 

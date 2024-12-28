@@ -169,7 +169,7 @@ def get_all_media_items():
 
 
 @retry(wait=wait_random_exponential(min=3, max=20), stop=stop_after_attempt(3))
-def download_photo(photo_name, photo_id):
+def download_photo(photo_name, photo_id, server_state):
     response = requests.get(f"https://photoslibrary.googleapis.com/v1/mediaItems/{photo_id}",
                             headers={
                                     "Authorization": f"Bearer {get_token()}"
@@ -181,6 +181,11 @@ def download_photo(photo_name, photo_id):
 
     data = response.json()
     base_url = data["baseUrl"]
+    product_url = data["productUrl"]
+    
+    # Store the product URL in the server state
+    server_state['photo_urls'][f"{photo_name}.jpg"] = product_url
+    
     response = requests.get(f"{base_url}=d", timeout=30)
 
     if response.status_code != 200:
@@ -192,7 +197,7 @@ def download_photo(photo_name, photo_id):
         f.write(response.content)
 
 
-async def download_random_photos(number_of_photos, photo_names, refresh_photos=False):
+async def download_random_photos(number_of_photos, photo_names, refresh_photos=False, server_state=None):
     if len(photo_names) != number_of_photos:
         raise ValueError("The number of photo names should be equal to the number of photos")
 
@@ -215,14 +220,14 @@ async def download_random_photos(number_of_photos, photo_names, refresh_photos=F
     # Download the photos
     for i, photo_id in enumerate(random_photos_ids):
         tries = 0
-        download_photo(photo_names[i], photo_id)
+        download_photo(photo_names[i], photo_id, server_state)
 
         # Test that the image was downloaded correctly. Try 3 times.
         img = cv2.imread(f"photos/{photo_names[i]}.jpg")
         while img is None and tries < 3:
             new_photo_id = np.random.choice(all_photo_ids, 1, replace=False)
             print(f"Invalid photo {photo_id}. Trying with photo {new_photo_id}...")
-            download_photo(photo_names[i], new_photo_id)
+            download_photo(photo_names[i], new_photo_id, server_state)
             img = cv2.imread(f"photos/{photo_names[i]}.jpg")
             tries += 1
         if img is None:

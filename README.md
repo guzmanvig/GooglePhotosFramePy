@@ -84,3 +84,40 @@ take a while depending on the number of photos you have. Then, it will display i
 To quit the app press `q` (repeatedly if needed).
 
 Note: If you don't see the slideshow in fullscreen, try specifying your screen resolution in the `display_width` and `display_height` fields in the config file.
+
+## Remote Control
+
+The slideshow can be controlled remotely through a web interface or HTTP endpoints.
+
+### Web Interface
+A React app is included in the `slideshow-control` directory that provides a simple interface to:
+- Skip to the next photo
+- Toggle black screen mode on/off
+- Open the current photo in Google Photos
+
+To run it:
+1. Navigate to the slideshow-control directory and install dependencies:
+```
+cd slideshow-control
+npm install
+npm start
+```
+
+The interface will be available at `http://localhost:3000` and can be accessed from any device in your network.
+
+### HTTP Endpoints
+The slideshow also exposes HTTP endpoints on port 5000 that can be used to control it programmatically:
+- `PUT /next-photo` - Skip to next photo
+- `PUT /black-screen` - Toggle black screen mode
+- `GET /current-photo-url` - Get URL of current photo
+
+Example using curl:
+```
+# Skip to next photo
+curl -X PUT http://localhost:5000/next-photo
+
+# Toggle black screen
+curl -X PUT http://localhost:5000/black-screen
+```
+
+Note: Replace `localhost` with your computer's IP address when accessing from other devices.

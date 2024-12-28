@@ -17,6 +17,13 @@ if not exist venv (
 REM Activate the virtual environment
 call venv\Scripts\activate
 
+REM Start the React app in a new window
+if not exist "slideshow-control\node_modules" (
+    start cmd /k "cd slideshow-control && npm install && npm start"
+) else (
+    start cmd /k "cd slideshow-control && npm start"
+)
+
 REM Run the main.py script
 python main.py
 
