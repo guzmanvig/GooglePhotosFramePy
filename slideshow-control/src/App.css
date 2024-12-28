@@ -1,10 +1,13 @@
 .App {
   text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .App-header {
   background-color: #282c34;
-  min-height: 100vh;
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -32,6 +35,11 @@ button {
 
 button:hover {
   background-color: #4fa8c7;
+}
+
+button:active {
+  background-color: #61dafb;
+  transform: scale(0.98);
 }
 
 button:disabled {
