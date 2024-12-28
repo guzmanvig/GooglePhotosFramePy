@@ -329,9 +329,9 @@ def main_loop():
                     click_params['toggle_black_screen'] = False
                     break
                 # Toggle black screen via HTTP request
-                if click_params['toggle_black_screen_requested']:
+                if server_state['toggle_black_screen_requested']:
                     black_screen_on = not black_screen_on
-                    click_params['toggle_black_screen_requested'] = False
+                    server_state['toggle_black_screen_requested'] = False
                     break 
         
         else:
