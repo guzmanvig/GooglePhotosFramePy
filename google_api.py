@@ -1,6 +1,5 @@
 import asyncio
 import os.path
-
 import cv2
 from tenacity import retry, wait_random_exponential, stop_after_attempt
 import numpy as np
@@ -11,7 +10,8 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from config import config
 
-SCOPES = ['https://www.googleapis.com/auth/photoslibrary.readonly']
+# Update to use the new Picker API scope
+SCOPES = ['https://www.googleapis.com/auth/photospicker.mediaitems.readonly']
 
 
 def get_token():
@@ -47,121 +47,84 @@ def get_token():
     return creds.token
 
 
-def google_api_media_search(page_token, date_ranges, album_id):
-    payload = {
-            "pageSize": 100,
-            "pageToken": page_token
-    }
-    if album_id:
-        payload["albumId"] = album_id
-    else:
-        payload["filters"] = {
-                "dateFilter": {
-                    "ranges": date_ranges
-                }
-        }
-
+def create_picker_session():
+    """Create a new Picker session for photo selection"""
     response = requests.post(
-        "https://photoslibrary.googleapis.com/v1/mediaItems:search",
+        "https://photospicker.googleapis.com/v1/sessions",
         headers={
             "Authorization": f"Bearer {get_token()}"
         },
-        json=payload,
+        json={},
         timeout=30
     )
-
-    response_json = response.json()
-    media_items = response_json.get("mediaItems", None)
-    if not media_items:
-        return [], None
-
-    next_page_token = response_json.get("nextPageToken")
-    photo_ids = [photo["id"] for photo in media_items if photo["mimeType"].startswith("image/")]
-    return photo_ids, next_page_token
+    
+    if response.status_code != 200:
+        raise ConnectionError(f"Error creating picker session: {response.status_code}")
+        
+    session_data = response.json()
+    return session_data['id'], session_data['pickerUri']
 
 
-def google_api_album_search(page_token, shared_albums, album_names):
-    if shared_albums:
-        url = "https://photoslibrary.googleapis.com/v1/sharedAlbums"
-    else:
-        url = "https://photoslibrary.googleapis.com/v1/albums"
-
+def get_picked_media_items(session_id, page_token=None):
+    """Get media items picked by user in a session"""
+    params = {
+        'sessionId': session_id,
+        'pageSize': 100
+    }
+    if page_token:
+        params['pageToken'] = page_token
+        
     response = requests.get(
-        url,
-        params={
-            "pageSize": 50,
-            "pageToken": page_token
-        },
+        "https://photospicker.googleapis.com/v1/mediaItems",
+        params=params,
         headers={
             "Authorization": f"Bearer {get_token()}"
         },
         timeout=30
     )
-
-    response_json = response.json()
-    albums = response_json["albums"] if not shared_albums else response_json["sharedAlbums"]
-    next_page_token = response_json.get("nextPageToken")
-
-    if len(album_names) == 1 and album_names[0] == "ALL":
-        album_ids = [album["id"] for album in albums]
-    else:
-        album_ids = [album["id"] for album in albums if album.get("title", None) in album_names]
-    return album_ids, next_page_token
+    
+    if response.status_code != 200:
+        raise ConnectionError(f"Error getting picked media items: {response.status_code}")
+        
+    return response.json()
 
 
 def get_all_media_items():
-    all_album_ids = set()
-
-    # Get all the album ids
-    albums = config['photo_selection'].get('albums', None)
-    if albums and len(albums) != 0:
-        album_ids, next_page_token = google_api_album_search(page_token="", shared_albums=False, album_names=albums)
-        all_album_ids.update(album_ids)
-        page = 1
-        while next_page_token:
-            print(f"Getting Google Photos albums page {page}...")
-            album_ids, next_page_token = google_api_album_search(page_token=next_page_token, shared_albums=False, album_names=albums)
-            all_album_ids.update(album_ids)
-            page += 1
-
-    # Get all the shared album ids
-    shared_albums = config['photo_selection'].get('shared_albums', None)
-    if shared_albums and len(shared_albums) != 0:
-        album_ids, next_page_token = google_api_album_search(page_token="", shared_albums=True, album_names=shared_albums)
-        all_album_ids.update(album_ids)
-        page = 1
-        while next_page_token:
-            print(f"Getting Google Photos shared albums page {page}...")
-            album_ids, next_page_token = google_api_album_search(page_token=next_page_token, shared_albums=True, album_names=shared_albums)
-            all_album_ids.update(album_ids)
-            page += 1
-
+    """Get all media items using the Picker API"""
+    # Create a new picker session
+    session_id, picker_uri = create_picker_session()
+    
+    # Save the session ID for later use
+    with open("picker_session.txt", "w") as f:
+        f.write(session_id)
+    
+    print(f"Please visit this URL to select photos: {picker_uri}")
+    input("Press Enter after you have finished selecting photos...")
+    
+    # Get all selected media items
     all_photo_ids = set()
-
-    # Get all the media items from the albums
-    if len(all_album_ids) != 0:
-        for album_id in all_album_ids:
-            photo_ids, next_page_token = google_api_media_search(page_token="", date_ranges=[], album_id=album_id)
-            all_photo_ids.update(photo_ids)
-            page = 1
-            while next_page_token:
-                print(f"Getting Google Photos from album page {page}...")
-                photo_ids, next_page_token = google_api_media_search(page_token=next_page_token, date_ranges=[], album_id=album_id)
-                all_photo_ids.update(photo_ids)
-                page += 1
-
-    # Get all the media items from the date ranges
-    date_ranges = config['photo_selection']['ranges']
-    if date_ranges and date_ranges != []:
-        photo_ids, next_page_token = google_api_media_search(page_token="", date_ranges=date_ranges, album_id=None)
+    response = get_picked_media_items(session_id)
+    
+    while True:
+        media_items = response.get('mediaItems', [])
+        photo_ids = [item['id'] for item in media_items 
+                    if item.get('type') == 'PHOTO']
         all_photo_ids.update(photo_ids)
-        page = 1
-        while next_page_token:
-            print(f"Getting Google Photos from date ranges page {page}...")
-            photo_ids, next_page_token = google_api_media_search(page_token=next_page_token, date_ranges=date_ranges, album_id=None)
-            all_photo_ids.update(photo_ids)
-            page += 1
-
+        
+        next_page_token = response.get('nextPageToken')
+        if not next_page_token:
+            break
+            
+        response = get_picked_media_items(session_id, next_page_token)
+    
+    # Clean up the session
+    requests.delete(
+        f"https://photospicker.googleapis.com/v1/sessions/{session_id}",
+        headers={"Authorization": f"Bearer {get_token()}"},
+        timeout=30
+    )
+    
+    # Save the photo IDs
     with open("all_photo_ids.txt", "w") as f:
         for photo_id in all_photo_ids:
             f.write(f"{photo_id}\n")
@@ -170,21 +133,30 @@ def get_all_media_items():
 
 @retry(wait=wait_random_exponential(min=3, max=20), stop=stop_after_attempt(3))
 def download_photo(photo_name, photo_id, server_state):
-    response = requests.get(f"https://photoslibrary.googleapis.com/v1/mediaItems/{photo_id}",
-                            headers={
-                                    "Authorization": f"Bearer {get_token()}"
-                                }, timeout=30)
+    """Download a photo using the media item ID"""
+    # Get the active session ID from a file or global variable
+    with open("picker_session.txt", "r") as f:
+        session_id = f.read().strip()
+    
+    response = requests.get(
+        f"https://photospicker.googleapis.com/v1/mediaItems/{photo_id}",
+        params={'sessionId': session_id},  # Add sessionId parameter
+        headers={
+            "Authorization": f"Bearer {get_token()}"
+        }, 
+        timeout=30
+    )
 
     if response.status_code != 200:
         print(f"Error {response.status_code} - {response.reason} getting photo {photo_id}, trying again...")
         raise ConnectionError(f"Error while getting photo {photo_id}")
 
     data = response.json()
-    base_url = data["baseUrl"]
-    product_url = data["productUrl"]
+    base_url = data['mediaFile']['baseUrl']
     
-    # Store the product URL in the server state
-    server_state['photo_urls'][f"{photo_name}.jpg"] = product_url
+    # Store the product URL in the server state if available
+    if 'productUrl' in data:
+        server_state['photo_urls'][f"{photo_name}.jpg"] = data['productUrl']
     
     response = requests.get(f"{base_url}=d", timeout=30)
 
