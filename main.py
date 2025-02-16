@@ -233,8 +233,8 @@ def main_loop():
     window_name = "image"
 
     cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
-    if config['slideshow']['display_width'] == 0 or config['slideshow']['display_height'] == 0:
-        cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+    # if config['slideshow']['display_width'] == 0 or config['slideshow']['display_height'] == 0:
+    cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
     
     click_params = {

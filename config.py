@@ -12,8 +12,8 @@ config = {
     'slideshow': {
         'delay_between_photos': 600000,  # In milliseconds
         'transition_animation_duration': 500,  # In milliseconds
-        'display_width': 0,  # These 2 can be left as 0. Specify them only if you don't get fullscreen (happens in some devices).
-        'display_height': 0,
+        'display_width': 1920,  # These 2 can be left as 0. Specify them only if you don't get fullscreen (happens in some devices).
+        'display_height': 1200,
         'pause': {
             'start': '00:00',  # If set, the slideshow will pause at this time and will show a black screen. In windows it also lowers the brightness to 0.
             'end': '09:00'
