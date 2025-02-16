@@ -3,7 +3,7 @@
 # Check if the venv directory exists
 if [ ! -d "venv" ]; then
     echo "Creating virtual environment..."
-    python3.12 -m venv venv
+    python3.11 -m venv venv
 
     echo "Installing requirements..."
     source venv/bin/activate
@@ -22,7 +22,7 @@ else
 fi
 
 # Run the main.py script
-python3.12 main.py
+python3.11 main.py
 
 # Deactivate the virtual environment
 deactivate
