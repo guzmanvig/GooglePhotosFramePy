@@ -179,12 +179,23 @@ def platform_is_windows():
     return platform.system() == 'Windows'
 
 
+def platform_is_linux():
+    return platform.system() == 'Linux'
+
+
 def set_brightness(brightness):
     if platform_is_windows():
         try:
             subprocess.run(['window_scripts/nircmd.exe', 'setbrightness', str(brightness)], check=True)
         except subprocess.CalledProcessError as e:
             print(f"Failed to set brightness: {e}")
+    elif platform_is_linux():
+        try:
+            subprocess.run(['brightnessctl', 'set', f"{brightness}%"], check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Failed to set brightness: {e}")
+        except FileNotFoundError:
+            print("brightnessctl not found. Please install it to control brightness on Linux.")
 
 
 def show_black_photo(window_name):
@@ -211,6 +222,7 @@ def handle_mouse_click(event, x, y, flags, param):
 def main_loop():
     # Check the platform. Used to determine if we can adjust the screen brightness
     os_is_windows = platform_is_windows()
+    os_is_linux = platform_is_linux()
 
     server_state = start_server()
     
@@ -282,8 +294,8 @@ def main_loop():
                     current_brightness = 0
             continue
 
-        # Check if we need to adjust the brightness according the time of day (only for Windows)
-        if os_is_windows and config['slideshow']['low_brightness']['start'] and config['slideshow']['low_brightness']['end']:
+        # Check if we need to adjust the brightness according the time of day
+        if (os_is_windows or os_is_linux) and config['slideshow']['low_brightness']['start'] and config['slideshow']['low_brightness']['end']:
             low_brightness = config['slideshow']['low_brightness']['brightness']
             if is_now_in_time_range(config['slideshow']['low_brightness']):
                 if current_brightness != low_brightness:
