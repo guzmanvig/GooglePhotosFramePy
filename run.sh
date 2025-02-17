@@ -22,7 +22,7 @@ else
 fi
 
 # Run the main.py script
-python3.11 main.py
+LANG=es_ES.utf8 python3.11 main.py
 
 # Deactivate the virtual environment
 deactivate
