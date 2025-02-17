@@ -1,2 +1,2 @@
-45 16 * * * home/guz/Desktop/GooglePhotosFramePy/linux_scripts/shut_down_and_suspend.sh >> /home/guz/Desktop/cron-log.log 2>&1
-47 16 * * * home/guz/Desktop/GooglePhotosFramePy/run.sh >> /home/guz/Desktop/cron-log.log 2>&1
+45 16 * * * /home/guz/Desktop/GooglePhotosFramePy/linux_scripts/shut_down_and_suspend.sh >> /home/guz/Desktop/cron-log.log 2>&1
+47 16 * * * /home/guz/Desktop/GooglePhotosFramePy/run.sh >> /home/guz/Desktop/cron-log.log 2>&1
