@@ -256,7 +256,7 @@ def main_loop():
     }
     cv2.setMouseCallback(window_name, handle_mouse_click, click_params)
 
-    current_brightness = 100
+    current_brightness = 50
     current_img_index = 0
     black_screen_on = False
     pause_started = False
