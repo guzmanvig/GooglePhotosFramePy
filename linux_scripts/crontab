@@ -1,0 +1,2 @@
+45 16 * * * /Desktop/GooglePhotosFramePy/linux_scripts/shut_down_and_suspend.sh
+47 16 * * * /Desktop/GooglePhotosFramePy/run.sh
