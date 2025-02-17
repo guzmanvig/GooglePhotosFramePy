@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Get the directory of this script
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+
+# Change to the directory where the script is located
+cd "$SCRIPT_DIR" || exit 1
+
 # Check if the venv directory exists
 if [ ! -d "venv" ]; then
     echo "Creating virtual environment..."
