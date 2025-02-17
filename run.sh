@@ -22,9 +22,9 @@ source venv/bin/activate
 
 # Start the React app in the background
 if [ ! -d "slideshow-control/node_modules" ]; then
-    (cd slideshow-control && npm install && && BROWSER=none npm start) &
+    (cd slideshow-control && npm install && BROWSER=none npm start) &
 else
-    (cd slideshow-control && && BROWSER=none npm start) &
+    (cd slideshow-control && BROWSER=none npm start) &
 fi
 
 # Run the main.py script
