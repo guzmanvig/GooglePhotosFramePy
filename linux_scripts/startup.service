@@ -4,7 +4,6 @@ After=graphical-session.target
 
 [Service]
 Type=simple
-ExecStartPre=/usr/bin/xhost +local:
 ExecStart=/home/guz/Desktop/GooglePhotosFramePy/run.sh
 Restart=always
 User=guz

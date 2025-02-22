@@ -1,5 +1,6 @@
 #!/bin/bash
-echo $DISPLAY
+export XAUTHORITY=$(ls /run/user/1000/.mutter-Xwaylandauth.*)
+xhost +local:
 
 # Get the directory of this script
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
