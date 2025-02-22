@@ -1,12 +1,14 @@
 [Unit]
 Description=Run photo frame at startup
-After=network.target
+After=graphical.target
+Requires=graphical.target
 
 [Service]
 Type=simple
+Environment=DISPLAY=:0
 ExecStart=/home/guz/Desktop/GooglePhotosFramePy/run.sh
 Restart=always
 User=guz
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
