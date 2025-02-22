@@ -1,4 +1,5 @@
 #!/bin/bash
+echo $DISPLAY
 
 # Get the directory of this script
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
