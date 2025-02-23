@@ -4,4 +4,4 @@
 WAKE_TIME=$(date -d '09:00 tomorrow' +%s)
 
 # Suspend the system and set wake-up time
-sudo rtcwake -m mem -t $WAKE_TIME
+sudo /usr/sbin/rtcwake -m mem -t $WAKE_TIME
