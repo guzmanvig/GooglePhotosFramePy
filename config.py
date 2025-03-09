@@ -38,7 +38,7 @@ config = {
         'height': 200   
     },
     'time_text': {
-        'show': True,
+        'show': False,
         'relative_position': 'BOTTOM_CENTER',  # Or TOP_CENTER
         'margin_top': 30,  # Only relevant if TOP_CENTER
         'margin_bottom': 70,  # Only relevant if BOTTOM_CENTER
@@ -50,7 +50,7 @@ config = {
         'font_color': (255, 255, 255)
     },
     'date_text': {
-        'show': True,
+        'show': False,
         'relative_position': 'CENTER_BELOW_TIME',  # Or CENTER_ABOVE_TIME
         'spacing_from_time': 20,
         'start_position_X': 20,  # These 2 are only used if relative_position is empty
