@@ -41,23 +41,23 @@ config = {
         'show': True,
         'relative_position': 'BOTTOM_CENTER',  # Or TOP_CENTER
         'margin_top': 30,  # Only relevant if TOP_CENTER
-        'margin_bottom': 25,  # Only relevant if BOTTOM_CENTER
+        'margin_bottom': 65,  # Only relevant if BOTTOM_CENTER
         'start_position_X': 20,  # These 2 are only used if relative_position is empty
         'start_position_Y': 100,
         'format': '%H:%M',
-        'font_scale': 2,
-        'font_thickness': 2,
+        'font_scale': 2.5,
+        'font_thickness': 2.5,
         'font_color': (255, 255, 255)
     },
     'date_text': {
         'show': True,
-        'relative_position': 'CENTER_ABOVE_TIME',  # Or CENTER_BELOW_TIME
-        'spacing_from_time': 15,
+        'relative_position': 'CENTER_BELOW_TIME',  # Or CENTER_ABOVE_TIME
+        'spacing_from_time': 20,
         'start_position_X': 20,  # These 2 are only used if relative_position is empty
         'start_position_Y': 100,
         'format': '%d de %B',
-        'font_scale': 0.5,
-        'font_thickness': 1,
+        'font_scale': 1,
+        'font_thickness': 1.5,
         'font_color': (255, 255, 255)
     }
 }

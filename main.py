@@ -321,10 +321,10 @@ def main_loop():
 
         # Display the current image. If we are showing time, refresh every 2 seconds
         if config['time_text']['show']:
-            number_of_refreshes = delay_between_photos // 2000  # Refresh every 2 seconds this many times
+            number_of_refreshes = delay_between_photos // 50000  # Refresh every 50 seconds this many times
             for i in range(number_of_refreshes):
                 cv2.imshow(window_name, get_fullscreen_image(current_img_path, window_name))
-                key = cv2.waitKey(2000)
+                key = cv2.waitKey(50000)
                 if key == ord('q'):
                     break
                 # Skip to next photo via manual click
