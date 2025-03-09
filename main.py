@@ -348,12 +348,33 @@ def main_loop():
         
         else:
             cv2.imshow(window_name, get_fullscreen_image(current_img_path, window_name))
-            key = cv2.waitKey(delay_between_photos)
-            if key == ord('q'):
-                break
-            # TODO: This will not work since we are in the waitKey loop. Same thing for the manual black screen
-            if click_params['skip_to_next']:
-                click_params['skip_to_next'] = False
+            remaining_delay = delay_between_photos
+            check_every = 1000  # Check every 1s
+            while remaining_delay > 0:
+                key = cv2.waitKey(check_every) 
+                if key == ord('q'):
+                    break
+                # Skip to next photo via manual click
+                if click_params['skip_to_next']:
+                    click_params['skip_to_next'] = False
+                    break
+                # Skip to next photo via HTTP request  
+                if server_state['skip_to_next_requested']:
+                    server_state['skip_to_next_requested'] = False
+                    break
+                # Toggle black screen via manual click
+                if click_params['toggle_black_screen']:
+                    black_screen_on = not black_screen_on
+                    click_params['toggle_black_screen'] = False
+                    break
+                # Toggle black screen via HTTP request
+                if server_state['toggle_black_screen_requested']:
+                    black_screen_on = not black_screen_on
+                    server_state['toggle_black_screen_requested'] = False
+                    break
+                
+                remaining_delay -= check_every
+                
 
         if black_screen_on:
             continue
