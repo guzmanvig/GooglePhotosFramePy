@@ -41,7 +41,7 @@ config = {
         'show': True,
         'relative_position': 'BOTTOM_CENTER',  # Or TOP_CENTER
         'margin_top': 30,  # Only relevant if TOP_CENTER
-        'margin_bottom': 65,  # Only relevant if BOTTOM_CENTER
+        'margin_bottom': 70,  # Only relevant if BOTTOM_CENTER
         'start_position_X': 20,  # These 2 are only used if relative_position is empty
         'start_position_Y': 100,
         'format': '%H:%M',
@@ -56,8 +56,8 @@ config = {
         'start_position_X': 20,  # These 2 are only used if relative_position is empty
         'start_position_Y': 100,
         'format': '%d de %B',
-        'font_scale': 1,
-        'font_thickness': 1,
+        'font_scale': 1.5,
+        'font_thickness': 2,
         'font_color': (255, 255, 255)
     }
 }
