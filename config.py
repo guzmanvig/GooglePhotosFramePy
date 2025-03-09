@@ -46,7 +46,7 @@ config = {
         'start_position_Y': 100,
         'format': '%H:%M',
         'font_scale': 2.5,
-        'font_thickness': 2.5,
+        'font_thickness': 2,
         'font_color': (255, 255, 255)
     },
     'date_text': {
@@ -57,7 +57,7 @@ config = {
         'start_position_Y': 100,
         'format': '%d de %B',
         'font_scale': 1,
-        'font_thickness': 1.5,
+        'font_thickness': 1,
         'font_color': (255, 255, 255)
     }
 }
