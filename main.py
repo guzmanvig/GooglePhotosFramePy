@@ -203,6 +203,17 @@ def show_black_photo(window_name):
     cv2.imshow(window_name, black_image)
     cv2.waitKey(10)
 
+def suspend_system():
+    try:
+        # Get wake-up timestamp for 9 AM tomorrow
+        tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
+        wake_time = tomorrow.replace(hour=9, minute=0, second=0).timestamp()
+        subprocess.run([
+            '/usr/sbin/rtcwake', '-m', 'mem', '-t', str(int(wake_time))
+        ], check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to suspend system: {e}")
+
 
 def handle_mouse_click(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
@@ -288,10 +299,13 @@ def main_loop():
                 click_params['toggle_black_screen'] = False
             else:
             # Else show the black screen and lower the brightness
-                show_black_photo(window_name)
-                if current_brightness != 0:
-                    set_brightness(0)
-                    current_brightness = 0
+                if os_is_windows:
+                    show_black_photo(window_name)
+                    if current_brightness != 0:
+                        set_brightness(0)
+                        current_brightness = 0
+                else:
+                    suspend_system()
             continue
 
         # Check if we need to adjust the brightness according the time of day
