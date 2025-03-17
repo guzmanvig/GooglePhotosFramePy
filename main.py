@@ -305,9 +305,10 @@ def main_loop():
                         set_brightness(0)
                         current_brightness = 0
                 else:
-                    suspend_system()
                     black_screen_on = False
                     click_params['toggle_black_screen'] = False
+                    suspend_system()
+
             continue
 
         # Check if we need to adjust the brightness according the time of day
