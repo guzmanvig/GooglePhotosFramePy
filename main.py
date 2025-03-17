@@ -209,7 +209,7 @@ def suspend_system():
         tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
         wake_time = tomorrow.replace(hour=9, minute=0, second=0).timestamp()
         subprocess.run([
-            '/usr/sbin/rtcwake', '-m', 'mem', '-t', str(int(wake_time))
+            'sudo', '/usr/sbin/rtcwake', '-m', 'mem', '-t', str(int(wake_time))
         ], check=True)
     except subprocess.CalledProcessError as e:
         print(f"Failed to suspend system: {e}")
@@ -306,6 +306,8 @@ def main_loop():
                         current_brightness = 0
                 else:
                     suspend_system()
+                    black_screen_on = False
+                    click_params['toggle_black_screen'] = False
             continue
 
         # Check if we need to adjust the brightness according the time of day
