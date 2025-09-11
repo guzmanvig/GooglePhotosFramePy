@@ -123,3 +123,5 @@ curl -X PUT http://localhost:5000/black-screen
 ```
 
 Note: Replace `localhost` with your computer's IP address when accessing from other devices.
+
+...
